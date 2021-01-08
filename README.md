@@ -83,33 +83,69 @@ This will produce the following help text:
 							Change the file name from table_records.txt to whatever you wish
 			
 			
+			
 Interval (Time interval)
+
 	1. Choose a time interval in hours to filter the results, default is 24 hours
+	
 	2. The score in the Total column shows the score for each ticker in the last 24 hours
+	
 	3. The score in the Recent column shows the score for each ticker in the last 12 hours
+	
 	4. The score in the Prev column shows the score for each ticker in the last 12-24 hours
+	
 	5. The score in the other subreddit columns shows the score for each ticker in the last 24 hours
 	
+	
 Min (Minimum score)
+
 	1. Filter out results that have less than the min score in the Title column, default is 10
 	
+	
 Adv (Advanced settings)
+
 	1. Using this parameter shows advanced ticker information, running advanced mode is slower
+	
 	2. This options shows additional yahoo information on the ticker, such as open price, day low, day high, forward PE, beta, volume, etc.
 	
+	
 Sub (Subreddit)
+
 	1. Choose a different subreddit to search for tickers in, default is pennystocks
+	
 	2. When a different subreddit is choosen, the total, recent, prev columns contain the score for the choosen subreddit
+	
 	3. Possible choices: pennystocks, RobinHoodPennyStocks, Daytrading, StockMarket, stocks
 
-Sort
-	1. Sort the results by descending order of score, by default the table shows the highest total score first
-	2.  pass in values 1, 2, 3, or 4
-	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score
 
+Sort
+
+	1. Sort the results by descending order of score, by default the table shows the highest total score first
+	
+	2.  pass in values 1, 2, 3, or 4
+	
+	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score
+	
+	
 Filename
+
 	1. choose a different filename, this programs saves the table results to table_records.txt in the same folder as the AutoDD.py program
 	
+## Troubleshoot
+
+ModuleNotFoundError: No module named 'something'
+	
+	- This means the dependency was not installed correctly, try running: 
+	
+		pip install 'something'
+		
+AutoDD.py not found
+
+	- This means the terminal can't find the python script, either navigate to the AutoDD folder using terminal or
+	
+		python path-to-autodd-folder/AutoDD.py
+		ie. python C:/AutoDD_Folder/AutoDD.py
+
 ## Scheduler (Tested on Windows) 
 	
 1. Create a .bat file and type in:
