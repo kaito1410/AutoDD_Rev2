@@ -1,0 +1,4 @@
+.env/
+Pipfile
+Pipfile.lock
+table_records.txt
