@@ -25,7 +25,7 @@ jobs:
       - name: Run a one-line script
         run: echo Run flask freeze here!!
 
-  build:
+  deploy:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
