@@ -157,7 +157,7 @@ I've put a couple global variables for some advanced users to allow for easy mod
 ## License
 
     AutoDD - Automatically does the "due diligence" for you. 
-    Copyright (C) 2020  Fufu Fang
+    Copyright (C) 2020  Fufu Fang And Steven Zhu
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
