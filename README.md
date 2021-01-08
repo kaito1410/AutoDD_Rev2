@@ -37,10 +37,12 @@ tabulate - pip install tabulate https://pypi.org/project/tabulate/
 Simply open the terminal (powershell or command prompt in windows) and navigate to the AutoDD.py folder, then type:
 
     python AutoDD.py
-	
+
 Alternatively, you can run the script by providing the folder to AutoDD.py (note, you can use any path/folder, as long as it contains AutoDD.py)
 
 	ie. python C:\AutoDD-folder\AutoDD.py
+
+You can also choose to run run_auto_dd.bat (or run_auto_dd.sh if you are in a *Nix based platform, such as MacOSX)
 
 Running the script typically takes 1 minute or so, depending on your options and the number of results found
 Once the script finishes running:
