@@ -5,25 +5,25 @@ If you want to know what stocks people are talking about on reddit, this little 
 
 Original author - Fufu Fang https://github.com/fangfufu
 
-Rev 2 Author - Steven Zhu https://github.com/kaito1410
+Rev 2 Author - Steven Zhu https://github.com/kaito1410 Napo2k https://github.com/Napo2k
 
 The original AutoDD produced a simple table of the stock ticker and the number of threads talking about the ticker.
 
 Version 2 of AutoDD adds some options and features that the original did not have.
 
-	- ability to display a change in results (ie, from the previous day to today)
+	- ability to display a change in results (ie, an increase or decrease of score from the previous day to today)
 	
-	- ability to pull additional stock information from yahoo (such as open and close price, volume, average volumn, etc)
+	- ability to pull additional stock information from yahoo finance (such as open and close price, volume, average volume, etc)
 	
 	- ability to pull results from multiple subreddits (pennystocks, RobinHoodPennyStocks, stocks, Daytrading, etc)
 	
-	- added score system to calculate a score for each ticker based on the number of occurrences, DD or Catalyst flair, and number of upvotes
+	- added score system to calculate a score for each ticker based on the number of occurrences, DD, Catalyst, or technical analysis flair, and number of upvotes
 	
-	- Can be run with a windows schedular to run the program at a set time everyday
+	- Can be run with a windows scheduler to run the program at a set time everyday
 
 ## Requirements 
 
-Python (tested on python 3.8) - make sure you add python to the path variable during installation
+Python (tested on python 3.8)
 
 Pip python get-pip.py https://phoenixnap.com/kb/install-pip-windows#:~:text=PIP%20is%20automatically%20installed%20with,9%2B%20and%20Python%203.4%2B.
 
@@ -36,32 +36,59 @@ tabulate - pip install tabulate https://pypi.org/project/tabulate/
 The requirements can be installed
 
 ## Running
-Simply open the terminal (powershell or command prompt in windows) and navigate to the AutoDD.py folder, then type:
 
-    python AutoDD.py
+To set up the dependencies on Windows 10
 
-Alternatively, you can run the script by providing the folder to AutoDD.py (note, you can use any path/folder, as long as it contains AutoDD.py)
+	1. Install python 3.8 and make sure you add python to the path variable during installation
+	2. Run setup_auto_dd.bat, it should open a terminal and install the dependencies
+	3. If all dependencies are installed successfully, run run_auto_dd.bat
+	4. After 1-2 minutes, you should find a table_records.txt file in the AutoDD folder
+	5. To generate a new table, simply run run_auto_dd.bat again, it will append a new table to the table_records.txt file
 
-	ie. python C:\AutoDD-folder\AutoDD.py
-
-You can also choose to run run_auto_dd.bat (or run_auto_dd.sh if you are in a *Nix based platform, such as MacOSX)
-
-Running the script typically takes 1 minute or so, depending on your options and the number of results found
-Once the script finishes running:
+To set up the dependencies on Linux/MacOSX
 	
-	1. The terminal will output: "Wrote to file successfully: C:\AutoDD-folder\table_records.txt"
-	2. An output called table_records.txt will be created in the same folder as AutoDD.py.
+	1. Install python 3.8 and Pip3 https://medium.com/swlh/installing-python-and-pip-on-mac-72b7639a58
+	2. Run run_auto_dd.sh, it should open a terminal and install the dependencies
+	3. If dependencies are installed correct, the command will also run the AutoDD script
+	4. An output called table_records.txt will be created in the same folder as AutoDD.py.
 		- If table_records.txt already exists, it will append to the text file instead 
+
+
+For Advanced Users:
+	
+	1. Simply open the terminal (powershell or command prompt on windows, terminal on linux/MacOSX) and navigate to the AutoDD folder, then type:
+		
+		python main.py -h
+		
+	2. Follow the help document and set up the optional parameters as you'd like. 
+
+## Columns Explained
+
+Code - Ticker Name
+
+Total - Total score on the ticker for r/pennystock subreddit. Higher means more discussions/chatter about this ticker
+
+Recent - Score of the ticker from the last X hours. By default, Recent shows the score from the last 12 hours. If you change the interval using --interval 48, then recent show data from 24 hours ago (48 divide by 2)
+
+Prev - Score of the ticker from the last 2X to X hour period. By default, Prev shows the score from the last 12-24 hour period. If you change the interval using --interval 48, then recent show data from the 24-48 hour period
+
+Change - (Recent score - Prev score) Shows increase or decrease in amount of chatter/discussions about this ticker. Positive numbers = increase and negative numbers = decrease
+
+Rockets - Number of Rocket Emojis
 
 ## Example output
 
-Simple Output:
+Default Output:
 
-![Alt text](simple_autodd.JPG?raw=true "Title")
+![Alt text](default_option.JPG?raw=true "Title")
 
-Advanced Output:
+Allsub Option Output:
 
-![Alt text](advanced_autodd.JPG?raw=true "Title")
+![Alt text](allsub_option.JPG?raw=true "Title")
+
+Yahoo Option Output:
+
+![Alt text](yahoo_option.JPG?raw=true "Title")
 
 ## Options
 
@@ -76,27 +103,28 @@ This will produce the following help text:
 	AutoDD Optional Parameters
 
 	optional arguments:
-	  -h, --help            show this help message and exit
-	  --interval [INTERVAL]
+	-h, --help            show this help message and exit
+	--interval [INTERVAL]
 							Choose a time interval in hours to filter the results, default is 24 hours
-	  --min [MIN]           Filter out results that have less than the min score, default is 10
-	  --adv                 Using this parameter shows advanced ticker information, running advanced mode is slower
-	  --sub [SUB]           Choose a different subreddit to search for tickers in, default is pennystocks
-	  --sort [SORT]         Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score
-	  --filename [FILENAME]
+	--min [MIN]           Filter out results that have less than the min score, default is 10
+	--yahoo               Using this parameter shows yahoo finance information on the ticker, makes the script run slower!
+	--sub [SUB]           Choose a different subreddit to search for tickers in, default is pennystocks
+	--sort [SORT]         Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis
+	--allsub              Using this parameter searchs from one subreddit only, default subreddit is r/pennystocks.
+	--filename [FILENAME]
 							Change the file name from table_records.txt to whatever you wish
 			
 			
 			
 Interval (Time interval)
 
-	1. Choose a time interval in hours to filter the results, default is 24 hours
+	1. Choose a time interval N in hours to filter the results, default is 24 hours
 	
-	2. The score in the Total column shows the score for each ticker in the last 24 hours
+	2. The score in the Total column shows the score for each ticker in the last N hours
 	
-	3. The score in the Recent column shows the score for each ticker in the last 12 hours
+	3. The score in the Recent column shows the score for each ticker in the last N/2 hours, default to 12h
 	
-	4. The score in the Prev column shows the score for each ticker in the last 12-24 hours
+	4. The score in the Prev column shows the score for each ticker in the last N/2 - N hours, default is 12h - 24h
 	
 	5. The score in the other subreddit columns shows the score for each ticker in the last 24 hours
 	
@@ -106,9 +134,9 @@ Min (Minimum score)
 	1. Filter out results that have less than the min score in the Title column, default is 10
 	
 	
-Adv (Advanced settings)
+Yahoo (Yahoo Finance toggle)
 
-	1. Using this parameter shows advanced ticker information, running advanced mode is slower
+	1. Using this parameter shows yahoo finance information, running yahoo mode is slower
 	
 	2. This options shows additional yahoo information on the ticker, such as open price, day low, day high, forward PE, beta, volume, etc.
 	
@@ -128,8 +156,11 @@ Sort
 	
 	2.  pass in values 1, 2, 3, or 4
 	
-	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score
+	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by change in # of rocket emojis
 	
+Sub (Subreddit toggle)
+
+	1. Using this parameter shows scores on the other subreddits such as RobinHoodPennyStocks, Stocks, WallStreetBets, etc
 	
 Filename
 
@@ -205,7 +236,7 @@ I've put a couple global variables for some advanced users to allow for easy mod
 ## License
 
     AutoDD - Automatically does the "due diligence" for you. 
-    Copyright (C) 2020  Fufu Fang And Steven Zhu
+    Copyright (C) 2020  Fufu Fang, kaito1410, Napo2k
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
