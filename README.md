@@ -33,7 +33,7 @@ yahooquery - pip install yahooquery https://pypi.org/project/yahooquery/
 
 tabulate - pip install tabulate https://pypi.org/project/tabulate/
 
-The requirements can be installed
+The requirements can be installed by running install_requirements.bat / install_requirements.sh
 
 ## Running
 
