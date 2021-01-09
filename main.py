@@ -40,14 +40,17 @@ def main():
     parser.add_argument('--min', nargs='?', const=10, type=int, default=10,
                     help='Filter out results that have less than the min score, default is 10')
 
-    parser.add_argument('--adv', default=False, action='store_true',
-                    help='Using this parameter shows advanced ticker information, running advanced mode is slower')
+    parser.add_argument('--yahoo', default=False, action='store_true',
+                    help='Using this parameter shows yahoo finance information on the ticker, makes the script run slower!')
 
     parser.add_argument('--sub', nargs='?', const='pennystocks', type=str, default='pennystocks',
                     help='Choose a different subreddit to search for tickers in, default is pennystocks')
 
     parser.add_argument('--sort', nargs='?', const=1, type=int, default=1,
-                    help='Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score')
+                    help='Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis')
+
+    parser.add_argument('--allsub', default=False, action='store_true',
+                    help='Using this parameter searchs from one subreddit only, default subreddit is r/pennystocks.')
 
     parser.add_argument('--filename', nargs='?', const='table_records.txt', type=str, default='table_records.txt',
                     help='Change the file name from table_records.txt to whatever you wish')
@@ -59,16 +62,21 @@ def main():
     results_from_api = get_submission(args.interval/2, args.sub)  
 
     print("Searching for tickers...")
-    current_tbl, _ = get_freq_list(results_from_api[0])
-    prev_tbl, _ = get_freq_list(results_from_api[1])
+    current_tbl, current_rockets = get_freq_list(results_from_api[0])
+    prev_tbl, prev_rockets = get_freq_list(results_from_api[1])
 
-    print("Populating table...")
+    print("Populating results...")
     results_tbl = combine_tbl(current_tbl, prev_tbl)
 
-    for api_result in results_from_api[2:]:
-        results_tbl = additional_filter(results_tbl, api_result)
-
     results_tbl = filter_tbl(results_tbl, args.min)
+
+    print("Counting rockets...")
+    results_tbl = append_rocket_tbl(results_tbl, current_rockets, prev_rockets)
+
+    if args.allsub:
+        print("Searching other subreddits...")
+        for api_result in results_from_api[2:]:
+            results_tbl = additional_filter(results_tbl, api_result)
 
     if args.sort == 1:
         results_tbl = sorted(results_tbl, key=lambda x: x[1][0], reverse=True)
@@ -78,13 +86,14 @@ def main():
         results_tbl = sorted(results_tbl, key=lambda x: x[1][2], reverse=True)
     elif args.sort == 4:
         results_tbl = sorted(results_tbl, key=lambda x: x[1][3], reverse=True)
+    elif args.sort == 5:
+        results_tbl = sorted(results_tbl, key=lambda x: x[1][4], reverse=True)
 
-  
-    if args.adv:
-        print("Getting advanced table...")
+    if args.yahoo:
+        print("Getting yahoo finance information...")
         results_tbl = getTickerInfo(results_tbl)
 
-    print_tbl(results_tbl, args.filename)
+    print_tbl(results_tbl, args.filename, args.allsub, args.yahoo)
 
 if __name__ == '__main__':
     main()

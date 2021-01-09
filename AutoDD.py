@@ -29,6 +29,7 @@ import re
 import argparse
 import logging
 
+from collections import Counter
 from datetime import datetime, timedelta
 
 # Pip modules imports
@@ -63,6 +64,9 @@ bonus_points = 2
 
 # every x upvotes on the thread counts for 1 point (rounded down)
 upvote_factor = 2
+
+# rocket emoji 
+rocket = '🚀'
 
 def get_submission(n, sub):
 
@@ -125,6 +129,9 @@ def get_freq_list(gen):
     # Dictionary containing the summaries
     all_dict = {}
 
+    # Dictionary containing the rocket count
+    rocket_dict = {}
+
     # looping over each thread
     for i in gen:
 
@@ -148,31 +155,106 @@ def get_freq_list(gen):
         if hasattr(i, 'title'):
             title = ' ' + i.title + ' '
             title_extracted = set(re.findall(pattern, title))
-  
-            # title_extracted is a set, duplicate tickers from the same title counted once only
-            for j in title_extracted:
 
-                if j in all_dict:
-                    all_dict[j] += increment
-                else:
-                    all_dict[j] = increment
-
-        # skip searching in text body if ticker was found in the title
-        if len(title_extracted) > 0:
-            continue
-
-       # search the text body for the ticker/tickers
+        # search the text body for the ticker/tickers
         if hasattr(i, 'selftext'):
             selftext = ' ' + i.selftext + ' '
             selftext_extracted = set(re.findall(pattern, selftext))
-            for j in selftext_extracted:
 
-                if j in all_dict:
-                    all_dict[j] += increment
+        rocket_tickers = selftext_extracted.union(title_extracted)
+
+        for j in rocket_tickers:
+
+            count_rocket = title.count(rocket) + selftext.count(rocket)
+            if j in rocket_dict:
+                rocket_dict[j] += count_rocket
+            else:
+                rocket_dict[j] = count_rocket
+
+        # title_extracted is a set, duplicate tickers from the same title counted once only
+        for k in title_extracted:
+
+            if k in all_dict:
+                all_dict[k] += increment
+            else:
+                all_dict[k] = increment
+
+        # avoid counting additional point for the tickers found in the text body
+        # only search the text body if ticker was not found in the title
+        if len(title_extracted) > 0:
+                continue
+
+        for m in selftext_extracted:
+
+            if m in all_dict:
+                all_dict[m] += increment
+            else:
+                all_dict[m] = increment
+
+    return all_dict.items(), rocket_dict
+
+# this functions is similar to the above, but it's run on the 
+# results from other subreddits rather than r/pennystocks
+# since there is no flair, rockets, and we have a list of tickers
+# we are looking for already
+def get_freq_dict(gen):
+    """
+    Return the frequency list for the past n days
+
+    :param int gen: The generator for subreddit submission
+    :returns:
+        - all_tbl - frequency table for all stock mentions
+        - title_tbl - frequency table for stock mentions in titles
+        - selftext_tbl - frequency table for all stock metninos in selftext
+    """
+
+    # Python regex pattern for stocks codes
+    pattern = "[A-Z]{3,5}"
+
+    # Dictionary containing the summaries
+    all_dict = {}
+
+    # looping over each thread
+    for i in gen:
+
+        # every ticker in the title will earn this base points
+        increment = base_points
+
+        # every 2 upvotes are worth 1 extra point
+        if hasattr(i, 'score') and upvote_factor > 0:
+            increment += math.ceil(i.score/upvote_factor)
+
+        # search the title for the ticker/tickers
+        if hasattr(i, 'title'):
+            title = ' ' + i.title + ' '
+            title_extracted = set(re.findall(pattern, title))
+
+            # title_extracted is a set, duplicate tickers from the same title counted once only
+            for k in title_extracted:
+                    
+                if k in all_dict:
+                    all_dict[k] += increment
                 else:
-                    all_dict[j] = increment
+                    all_dict[k] = increment
 
-    return all_dict.items(), all_dict 
+
+        # avoid counting additional point for the ticker found in the text body
+        if len(title_extracted) > 0:
+            continue
+
+        # search the text body for the ticker/tickers
+        if hasattr(i, 'selftext'):
+            selftext = ' ' + i.selftext + ' '
+            selftext_extracted = set(re.findall(pattern, selftext))
+
+            for m in selftext_extracted:
+
+                if m in all_dict:
+                    all_dict[m] += increment
+                else:
+                    all_dict[m] = increment
+
+    return all_dict 
 
 def filter_tbl(tbl, min_val):
     """
@@ -216,11 +298,23 @@ def combine_tbl(tbl_current, tbl_prev):
 
 def additional_filter(results_tbl, filter_collection):
 
-    _, filter_dict = get_freq_list(filter_collection)
+    filter_dict = get_freq_dict(filter_collection)
 
     for k, v in results_tbl:
         if k in filter_dict.keys():
             v.append(filter_dict[k])
+        else:
+            v.append(0)
+        
+    return results_tbl
+
+def append_rocket_tbl(results_tbl, rockets_1, rockets_2):
+
+    rockets = Counter(rockets_1) + Counter(rockets_2)
+
+    for k, v in results_tbl:
+        if k in rockets.keys():
+            v.append(rockets[k])
         else:
             v.append(0)
         
@@ -234,12 +328,16 @@ def get_list_val(lst, index):
             return 0
 
 
-def print_tbl(tbl, filename):
+def print_tbl(tbl, filename, allsub, yahoo):
 
-    header = ["Code", "Total", "Recent", "Prev", "Change"]
-    header = header + list(subreddit_dict.values())
-    header = header + list(summary_measures.values())
-    header = header + list(financial_measures.values())
+    header = ["Code", "Total", "Recent", "Prev", "Change", "Rockets"]
+
+    if allsub:
+        header = header + list(subreddit_dict.values())
+    
+    if yahoo:
+        header = header + list(summary_measures.values())
+        header = header + list(financial_measures.values())
 
     tbl = [[k] + v for k, v in tbl]
 
