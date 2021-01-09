@@ -40,7 +40,7 @@ The requirements can be installed by running install_requirements.bat / install_
 To set up the dependencies on Windows 10
 
 	1. Install python 3.8 and make sure you add python to the path variable during installation
-	2. Run setup_auto_dd.bat, it should open a terminal and install the dependencies
+	2. Run install_requirements.bat, it should open a terminal and install the dependencies
 	3. If all dependencies are installed successfully, run run_auto_dd.bat
 	4. After 1-2 minutes, you should find a table_records.txt file in the AutoDD folder
 	5. To generate a new table, simply run run_auto_dd.bat again, it will append a new table to the table_records.txt file
@@ -48,10 +48,10 @@ To set up the dependencies on Windows 10
 To set up the dependencies on Linux/MacOSX
 	
 	1. Install python 3.8 and Pip3 https://medium.com/swlh/installing-python-and-pip-on-mac-72b7639a58
-	2. Run run_auto_dd.sh, it should open a terminal and install the dependencies
-	3. If dependencies are installed correct, the command will also run the AutoDD script
-	4. An output called table_records.txt will be created in the same folder as AutoDD.py.
-		- If table_records.txt already exists, it will append to the text file instead 
+	2. Run install_requirements.sh, it should open a terminal and install the dependencies
+	3. If all dependencies are installed successfully, run run_auto_dd.sh
+	4. After 1-2 minutes, you should find a table_records.txt file in the AutoDD folder
+	5. To generate a new table, simply run run_auto_dd.bat again, it will append a new table to the table_records.txt file
 
 
 For Advanced Users:
@@ -68,11 +68,11 @@ Code - Ticker Name
 
 Total - Total score on the ticker for r/pennystock subreddit. Higher means more discussions/chatter about this ticker
 
-Recent - Score of the ticker from the last X hours. By default, Recent shows the score from the last 12 hours. If you change the interval using --interval 48, then recent show data from 24 hours ago (48 divide by 2)
+Recent - Score of the ticker from the last X hours. By default, Recent shows the score from the last 12 hours. If you change the interval for example --interval 48, then recent show data from 24 hours ago (48 divide by 2)
 
-Prev - Score of the ticker from the last 2X to X hour period. By default, Prev shows the score from the last 12-24 hour period. If you change the interval using --interval 48, then recent show data from the 24-48 hour period
+Prev - Score of the ticker from the last X to 2X hour period. By default, Prev shows the score from the last 12-24 hour period. If you change the interval for example --interval 48, then recent show data from the 24-48 hour period
 
-Change - (Recent score - Prev score) Shows increase or decrease in amount of chatter/discussions about this ticker. Positive numbers = increase and negative numbers = decrease
+Change - (Recent score - Prev score) Shows increase or decrease in amount of chatter/discussions about this ticker. Positive numbers = increase in discussions, higher numbers means more discussions/chatter about this ticker
 
 Rockets - Number of Rocket Emojis
 
@@ -141,7 +141,7 @@ Yahoo (Yahoo Finance toggle)
 	2. This options shows additional yahoo information on the ticker, such as open price, day low, day high, forward PE, beta, volume, etc.
 	
 	
-Sub (Subreddit)
+Sub (Subreddit Selection)
 
 	1. Choose a different subreddit to search for tickers in, default is pennystocks
 	
@@ -158,7 +158,7 @@ Sort
 	
 	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by change in # of rocket emojis
 	
-Sub (Subreddit toggle)
+Allsub (Subreddit toggle)
 
 	1. Using this parameter shows scores on the other subreddits such as RobinHoodPennyStocks, Stocks, WallStreetBets, etc
 	
@@ -173,6 +173,10 @@ ModuleNotFoundError: No module named 'something'
 	- This means the dependency was not installed correctly, try running: 
 	
 		pip install 'something'
+		
+	- Another possibility is that python is using the wrong version, try:
+		
+		python3 main.py
 		
 AutoDD.py not found
 
