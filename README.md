@@ -94,11 +94,11 @@ Yahoo Option Output:
 
 In terminal, type:
 
-	python AutoDD.py -h
+	python main.py -h
 	
 This will produce the following help text:
 
-	usage: AutoDD.py [-h] [--interval [INTERVAL]] [--min [MIN]] [--adv] [--sub [SUB]] [--sort [SORT]] [--filename [FILENAME]]
+	usage: main.py [-h] [--interval [INTERVAL]] [--min [MIN]] [--adv] [--sub [SUB]] [--sort [SORT]] [--filename [FILENAME]]
 
 	AutoDD Optional Parameters
 
