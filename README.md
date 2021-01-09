@@ -11,15 +11,15 @@ The original AutoDD produced a simple table of the stock ticker and the number o
 
 Version 2 of AutoDD adds some options and features that the original did not have.
 
-	- ability to display a change in results (ie, from the previous day to today)
+	- ability to display a change in results (ie, an increase or decrease of score from the previous day to today)
 	
-	- ability to pull additional stock information from yahoo (such as open and close price, volume, average volumn, etc)
+	- ability to pull additional stock information from yahoo finance (such as open and close price, volume, average volume, etc)
 	
 	- ability to pull results from multiple subreddits (pennystocks, RobinHoodPennyStocks, stocks, Daytrading, etc)
 	
-	- added score system to calculate a score for each ticker based on the number of occurrences, DD or Catalyst flair, and number of upvotes
+	- added score system to calculate a score for each ticker based on the number of occurrences, DD, Catalyst, or technical analysis flair, and number of upvotes
 	
-	- Can be run with a windows schedular to run the program at a set time everyday
+	- Can be run with a windows scheduler to run the program at a set time everyday
 
 ## Requirements 
 
@@ -60,15 +60,33 @@ For Advanced Users:
 		
 	2. Follow the help document and set up the optional parameters as you'd like. 
 
+## Columns Explained
+
+Code - Ticker Name
+
+Total - Total score on the ticker for r/pennystock subreddit. Higher means more discussions/chatter about this ticker
+
+Recent - Score of the ticker from the last X hours. By default, Recent shows the score from the last 12 hours. If you change the interval using --interval 48, then recent show data from 24 hours ago (48 divide by 2)
+
+Prev - Score of the ticker from the last 2X to X hour period. By default, Prev shows the score from the last 12-24 hour period. If you change the interval using --interval 48, then recent show data from the 24-48 hour period
+
+Change - (Recent score - Prev score) Shows increase or decrease in amount of chatter/discussions about this ticker. Positive numbers = increase and negative numbers = decrease
+
+Rockets - Number of Rocket Emojis
+
 ## Example output
 
-Simple Output:
+Default Output:
 
-![Alt text](simple_autodd.JPG?raw=true "Title")
+![Alt text](default_option.JPG?raw=true "Title")
 
-Advanced Output:
+Allsub Option Output:
 
-![Alt text](advanced_autodd.JPG?raw=true "Title")
+![Alt text](allsub_option.JPG?raw=true "Title")
+
+Yahoo Option Output:
+
+![Alt text](yahoo_option.JPG?raw=true "Title")
 
 ## Options
 
@@ -83,27 +101,28 @@ This will produce the following help text:
 	AutoDD Optional Parameters
 
 	optional arguments:
-	  -h, --help            show this help message and exit
-	  --interval [INTERVAL]
+	-h, --help            show this help message and exit
+	--interval [INTERVAL]
 							Choose a time interval in hours to filter the results, default is 24 hours
-	  --min [MIN]           Filter out results that have less than the min score, default is 10
-	  --adv                 Using this parameter shows advanced ticker information, running advanced mode is slower
-	  --sub [SUB]           Choose a different subreddit to search for tickers in, default is pennystocks
-	  --sort [SORT]         Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score
-	  --filename [FILENAME]
+	--min [MIN]           Filter out results that have less than the min score, default is 10
+	--yahoo               Using this parameter shows yahoo finance information on the ticker, makes the script run slower!
+	--sub [SUB]           Choose a different subreddit to search for tickers in, default is pennystocks
+	--sort [SORT]         Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis
+	--allsub              Using this parameter searchs from one subreddit only, default subreddit is r/pennystocks.
+	--filename [FILENAME]
 							Change the file name from table_records.txt to whatever you wish
 			
 			
 			
 Interval (Time interval)
 
-	1. Choose a time interval in hours to filter the results, default is 24 hours
+	1. Choose a time interval N in hours to filter the results, default is 24 hours
 	
-	2. The score in the Total column shows the score for each ticker in the last 24 hours
+	2. The score in the Total column shows the score for each ticker in the last N hours
 	
-	3. The score in the Recent column shows the score for each ticker in the last 12 hours
+	3. The score in the Recent column shows the score for each ticker in the last N/2 hours, default to 12h
 	
-	4. The score in the Prev column shows the score for each ticker in the last 12-24 hours
+	4. The score in the Prev column shows the score for each ticker in the last N/2 - N hours, default is 12h - 24h
 	
 	5. The score in the other subreddit columns shows the score for each ticker in the last 24 hours
 	
@@ -113,9 +132,9 @@ Min (Minimum score)
 	1. Filter out results that have less than the min score in the Title column, default is 10
 	
 	
-Adv (Advanced settings)
+Yahoo (Yahoo Finance toggle)
 
-	1. Using this parameter shows advanced ticker information, running advanced mode is slower
+	1. Using this parameter shows yahoo finance information, running yahoo mode is slower
 	
 	2. This options shows additional yahoo information on the ticker, such as open price, day low, day high, forward PE, beta, volume, etc.
 	
@@ -135,8 +154,11 @@ Sort
 	
 	2.  pass in values 1, 2, 3, or 4
 	
-	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score
+	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by change in # of rocket emojis
 	
+Sub (Subreddit toggle)
+
+	1. Using this parameter shows scores on the other subreddits such as RobinHoodPennyStocks, Stocks, WallStreetBets, etc
 	
 Filename
 
