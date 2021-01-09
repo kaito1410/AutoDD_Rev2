@@ -21,18 +21,20 @@
 __author__ = "Fufu Fang" "kaito1410"
 __copyright__ = "The GNU General Public License v3.0"
 
-from psaw import PushshiftAPI
-from datetime import datetime, timedelta
-from tabulate import tabulate
-from datetime import datetime
-
+# Native Python imports
 import os
 import math
 import re
 import sys
 import argparse
-from yahooquery import Ticker
+import logging
 
+from datetime import datetime, timedelta
+
+# Pip modules imports
+from psaw import PushshiftAPI
+from yahooquery import Ticker
+from tabulate import tabulate
 
 # dictionary of possible subreddits to search in with their respective column name
 subreddit_dict = {'pennystocks' : 'pnystks',
