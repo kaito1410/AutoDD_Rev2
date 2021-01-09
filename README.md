@@ -33,6 +33,8 @@ yahooquery - pip install yahooquery https://pypi.org/project/yahooquery/
 
 tabulate - pip install tabulate https://pypi.org/project/tabulate/
 
+The requirements can be installed
+
 ## Running
 Simply open the terminal (powershell or command prompt in windows) and navigate to the AutoDD.py folder, then type:
 

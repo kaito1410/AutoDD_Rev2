@@ -1,7 +1,4 @@
 
-python3 -m venv .env
-.\env\bin\activate.bat
-
-pip install -r requirements.txt
+REM TODO if .env exists then activate, otherwise warn
 
 python -u AutoDD.py
