@@ -5,7 +5,7 @@ If you want to know what stocks people are talking about on reddit, this little 
 
 Original author - Fufu Fang https://github.com/fangfufu
 
-Rev 2 Author - Steven Zhu https://github.com/kaito1410
+Rev 2 Author - Steven Zhu https://github.com/kaito1410 Napo2k https://github.com/Napo2k
 
 The original AutoDD produced a simple table of the stock ticker and the number of threads talking about the ticker.
 
@@ -23,7 +23,7 @@ Version 2 of AutoDD adds some options and features that the original did not hav
 
 ## Requirements 
 
-Python (tested on python 3.8) - make sure you add python to the path variable during installation
+Python (tested on python 3.8)
 
 Pip python get-pip.py https://phoenixnap.com/kb/install-pip-windows#:~:text=PIP%20is%20automatically%20installed%20with,9%2B%20and%20Python%203.4%2B.
 
@@ -34,22 +34,31 @@ yahooquery - pip install yahooquery https://pypi.org/project/yahooquery/
 tabulate - pip install tabulate https://pypi.org/project/tabulate/
 
 ## Running
-Simply open the terminal (powershell or command prompt in windows) and navigate to the AutoDD.py folder, then type:
 
-    python AutoDD.py
+To set up the dependencies on Windows 10
 
-Alternatively, you can run the script by providing the folder to AutoDD.py (note, you can use any path/folder, as long as it contains AutoDD.py)
+	1. Install python 3.8 and make sure you add python to the path variable during installation
+	2. Run setup_auto_dd.bat, it should open a terminal and install the dependencies
+	3. If all dependencies are installed successfully, run run_auto_dd.bat
+	4. After 1-2 minutes, you should find a table_records.txt file in the AutoDD folder
+	5. To generate a new table, simply run run_auto_dd.bat again, it will append a new table to the table_records.txt file
 
-	ie. python C:\AutoDD-folder\AutoDD.py
-
-You can also choose to run run_auto_dd.bat (or run_auto_dd.sh if you are in a *Nix based platform, such as MacOSX)
-
-Running the script typically takes 1 minute or so, depending on your options and the number of results found
-Once the script finishes running:
+To set up the dependencies on Linux/MacOSX
 	
-	1. The terminal will output: "Wrote to file successfully: C:\AutoDD-folder\table_records.txt"
-	2. An output called table_records.txt will be created in the same folder as AutoDD.py.
+	1. Install python 3.8 and Pip3 https://medium.com/swlh/installing-python-and-pip-on-mac-72b7639a58
+	2. Run run_auto_dd.sh, it should open a terminal and install the dependencies
+	3. If dependencies are installed correct, the command will also run the AutoDD script
+	4. An output called table_records.txt will be created in the same folder as AutoDD.py.
 		- If table_records.txt already exists, it will append to the text file instead 
+
+
+For Advanced Users:
+	
+	1. Simply open the terminal (powershell or command prompt on windows, terminal on linux/MacOSX) and navigate to the AutoDD folder, then type:
+		
+		python main.py -h
+		
+	2. Follow the help document and set up the optional parameters as you'd like. 
 
 ## Example output
 
@@ -203,7 +212,7 @@ I've put a couple global variables for some advanced users to allow for easy mod
 ## License
 
     AutoDD - Automatically does the "due diligence" for you. 
-    Copyright (C) 2020  Fufu Fang And Steven Zhu
+    Copyright (C) 2020  Fufu Fang, kaito1410, Napo2k
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

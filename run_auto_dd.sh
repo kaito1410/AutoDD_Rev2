@@ -6,6 +6,6 @@ source .env/bin/activate
 
 pip install -r requirements.txt
 
-python -u AutoDD.py
+python -u main.py
 
 deactivate
