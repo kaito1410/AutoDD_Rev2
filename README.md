@@ -5,7 +5,7 @@ If you want to know what stocks people are talking about on reddit, this little 
 
 Original author - Fufu Fang https://github.com/fangfufu
 
-Rev 2 Author - Steven Zhu https://github.com/kaito1410
+Rev 2 Author - Steven Zhu https://github.com/kaito1410 Napo2k https://github.com/Napo2k
 
 The original AutoDD produced a simple table of the stock ticker and the number of threads talking about the ticker.
 
@@ -203,7 +203,7 @@ I've put a couple global variables for some advanced users to allow for easy mod
 ## License
 
     AutoDD - Automatically does the "due diligence" for you. 
-    Copyright (C) 2020  Fufu Fang And Steven Zhu
+    Copyright (C) 2020  Fufu Fang, kaito1410, Napo2k
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
