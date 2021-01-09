@@ -1,3 +1,3 @@
-python -u AutoDD.py
+python -u main.py
 
 exit
