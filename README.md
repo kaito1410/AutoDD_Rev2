@@ -25,7 +25,7 @@ Version 2 of AutoDD adds some options and features that the original did not hav
 
 Python (tested on python 3.8)
 
-Pip python get-pip.py https://phoenixnap.com/kb/install-pip-windows#:~:text=PIP%20is%20automatically%20installed%20with,9%2B%20and%20Python%203.4%2B.
+Pip - python get-pip.py https://phoenixnap.com/kb/install-pip-windows#:~:text=PIP%20is%20automatically%20installed%20with,9%2B%20and%20Python%203.4%2B.
 
 psaw - pip install psaw https://pypi.org/project/psaw/
 
