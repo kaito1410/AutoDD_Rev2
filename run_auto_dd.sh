@@ -1,11 +1,5 @@
 #!/bin/bash
 
-python3 -m venv .env
-
-source .env/bin/activate
-
-pip install -r requirements.txt
+# TODO if .env exists then activate, otherwise warn
 
 python -u main.py
-
-deactivate
