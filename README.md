@@ -23,7 +23,7 @@ Version 2 of AutoDD adds some options and features that the original did not hav
 
 ## Requirements 
 
-Python (tested on python 3.8)
+Python (tested on python 3.8.1) https://www.python.org/downloads/release/python-381/
 
 Pip - python get-pip.py https://phoenixnap.com/kb/install-pip-windows#:~:text=PIP%20is%20automatically%20installed%20with,9%2B%20and%20Python%203.4%2B.
 
@@ -36,6 +36,8 @@ tabulate - pip install tabulate https://pypi.org/project/tabulate/
 The requirements can be installed by running install_requirements.bat / install_requirements.sh
 
 ## Running
+
+Watch the setup video here https://www.youtube.com/watch?v=YwfwJYjnBFU
 
 To set up the dependencies on Windows 10
 
