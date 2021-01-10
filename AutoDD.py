@@ -47,10 +47,15 @@ subreddit_dict = {'pennystocks' : 'pnystks',
                   'wallstreetbets' : 'WSB'}
 
 # dictionary of ticker financial information to get from yahoo
-financial_measures = {'currentPrice' : 'Price', 'quickRatio': 'QckRatio', 'currentRatio': 'CrntRatio', 'targetMeanPrice': 'trgtmean', 'recommendationKey': 'recommadtn'}
+#financial_measures = {'currentPrice' : 'Price', 'quickRatio': 'QckRatio', 'currentRatio': 'CrntRatio', 'targetMeanPrice': 'trgtmean', 'recommendationKey': 'recommadtn'}
+financial_measures = {'currentPrice' : 'Price', 'recommendationKey': 'recommadtn'}
 
 # dictionary of ticker summary information to get from yahoo
-summary_measures = {'previousClose' : 'prvCls', 'open': 'open', 'dayLow': 'daylow', 'dayHigh': 'dayhigh', 'payoutRatio': 'pytRatio', 'forwardPE': 'forwardPE', 'beta': 'beta', 'bidSize': 'bidSize', 'askSize': 'askSize', 'volume': 'volume', 'averageVolume': 'avgvolume', 'averageVolume10days': 'avgvlmn10', 'fiftyDayAverage': '50dayavg', 'twoHundredDayAverage': '200dayavg'}
+#summary_measures = {'previousClose' : 'prvCls', 'open': 'open', 'dayLow': 'daylow', 'dayHigh': 'dayhigh', 'payoutRatio': 'pytRatio', 'forwardPE': 'forwardPE', 'beta': 'beta', 'bidSize': 'bidSize', 'askSize': 'askSize', 'volume': 'volume', 'averageVolume': 'avgvolume', 'averageVolume10days': 'avgvlmn10', 'fiftyDayAverage': '50dayavg', 'twoHundredDayAverage': '200dayavg'}
+summary_measures = {'previousClose' : 'prvCls'}
+
+# dictionairy of ticker key stats summary
+key_stats_measures = {'floatShares': 'Float'}
 
 
 # note: the following scoring system is tuned to calculate a "popularity" score
@@ -65,7 +70,7 @@ bonus_points = 2
 # every x upvotes on the thread counts for 1 point (rounded down)
 upvote_factor = 2
 
-# rocket emoji 
+# rocket emoji
 rocket = '🚀'
 
 def get_submission(n, sub):
@@ -94,13 +99,13 @@ def get_submission(n, sub):
     results.append(api.search_submissions(after=timestamp_mid,
                                  before=timestamp_end,
                                  subreddit=sub,
-                                 filter=['title', 'link_flair_text', 'selftext', 'score'])) 
+                                 filter=['title', 'link_flair_text', 'selftext', 'score']))
 
     # results from the last 2n hours until n hours ago
     results.append(api.search_submissions(after=timestamp_start,
                                  before=timestamp_mid,
                                  subreddit=sub,
-                                 filter=['title', 'link_flair_text', 'selftext', 'score'])) 
+                                 filter=['title', 'link_flair_text', 'selftext', 'score']))
 
     # results for the other subreddits
     for key in subreddit_dict:
@@ -193,7 +198,7 @@ def get_freq_list(gen):
 
     return all_dict.items(), rocket_dict
 
-# this functions is similar to the above, but it's run on the 
+# this functions is similar to the above, but it's run on the
 # results from other subreddits rather than r/pennystocks
 # since there is no flair, rockets, and we have a list of tickers
 # we are looking for already
@@ -231,7 +236,7 @@ def get_freq_dict(gen):
 
             # title_extracted is a set, duplicate tickers from the same title counted once only
             for k in title_extracted:
-                    
+
                 if k in all_dict:
                     all_dict[k] += increment
                 else:
@@ -254,7 +259,7 @@ def get_freq_dict(gen):
                 else:
                     all_dict[m] = increment
 
-    return all_dict 
+    return all_dict
 
 def filter_tbl(tbl, min_val):
     """
@@ -287,9 +292,9 @@ def combine_tbl(tbl_current, tbl_prev):
 
     for key, value in tbl_prev:
         if key in dict_result.keys():
-            dict_result[key][0] = dict_result[key][0] + value 
+            dict_result[key][0] = dict_result[key][0] + value
             dict_result[key][2] = value
-            dict_result[key][3] = dict_result[key][3] - value 
+            dict_result[key][3] = dict_result[key][3] - value
         else:
             dict_result[key] = [value, 0, value, -value]
 
@@ -305,7 +310,7 @@ def additional_filter(results_tbl, filter_collection):
             v.append(filter_dict[k])
         else:
             v.append(0)
-        
+
     return results_tbl
 
 def append_rocket_tbl(results_tbl, rockets_1, rockets_2):
@@ -317,7 +322,7 @@ def append_rocket_tbl(results_tbl, rockets_1, rockets_2):
             v.append(rockets[k])
         else:
             v.append(0)
-        
+
     return results_tbl
 
 
@@ -334,10 +339,11 @@ def print_tbl(tbl, filename, allsub, yahoo):
 
     if allsub:
         header = header + list(subreddit_dict.values())
-    
+
     if yahoo:
         header = header + list(summary_measures.values())
         header = header + list(financial_measures.values())
+        header = header + list(key_stats_measures.values())
 
     tbl = [[k] + v for k, v in tbl]
 
@@ -345,11 +351,11 @@ def print_tbl(tbl, filename, allsub, yahoo):
     # dd/mm/YY H:M:S
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
-    #print("date and time now = ", dt_string)	
+    #print("date and time now = ", dt_string)
     #print(tabulate(tbl, headers=header))
 
     # save the file to the same dir as the AutoDD.py script
-    completeName = os.path.join(sys.path[0], filename)  
+    completeName = os.path.join(sys.path[0], filename)
 
     # write to file
     with open(completeName, "a") as myfile:
@@ -358,7 +364,7 @@ def print_tbl(tbl, filename, allsub, yahoo):
         myfile.write('\n')
         myfile.write(tabulate(tbl, headers=header))
         myfile.write('\n\n')
-    
+
     #logs to console
     print("Wrote to file successfully: ")
     print(completeName)
@@ -379,7 +385,7 @@ def getTickerInfo(results_tbl):
 
     for entry in results_tbl:
         ticker = Ticker(entry[0])
-        if ticker is not None: 
+        if ticker is not None:
             valid = False
             for measure in summary_measures.keys():
                 result = get_nested(ticker.summary_detail, entry[0], measure)
@@ -399,9 +405,17 @@ def getTickerInfo(results_tbl):
                         valid = True
                 else:
                     entry[1].append(0)
+##adding key stats module
+            for measure in key_stats_measures.keys():
+                result = get_nested(ticker.key_stats, entry[0], measure)
+                if result is not None:
+                    entry[1].append(result)
+                    if result != 0:
+                        valid = True
+                else:
+                    entry[1].append(0)
 
             if valid:
                 filtered_tbl.append(entry)
 
     return filtered_tbl
-
