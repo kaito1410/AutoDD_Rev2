@@ -46,15 +46,17 @@ subreddit_dict = {'pennystocks' : 'pnystks',
                   'investing' : 'invstng',
                   'wallstreetbets' : 'WSB'}
 
+# quick stats that is important to most users (IMO)
+quick_stats = [('currentPrice','Price'), ('previousClose', 'PrvCls'), ('regularMarketChangePercent','%Change'), ('volume','Volume'), ('averageVolume', '3mAvgVol'), ('%ChangeVol', '%ChangeVol'), ('floatShares', 'Float'), ('industry', 'Industry')]
+
 # dictionary of ticker financial information to get from yahoo
-financial_measures = {'currentPrice' : 'Price', 'quickRatio': 'QckRatio', 'currentRatio': 'CrntRatio', 'targetMeanPrice': 'trgtmean', 'recommendationKey': 'recommadtn'}
+financial_measures = {'currentPrice' : 'Price', 'quickRatio': 'QckRatio', 'currentRatio': 'CrntRatio', 'targetMeanPrice': 'Trgtmean', 'recommendationKey': 'Recommend'}
 
 # dictionary of ticker summary information to get from yahoo
-summary_measures = {'previousClose' : 'prvCls', 'open': 'open', 'dayLow': 'daylow', 'dayHigh': 'dayhigh', 'payoutRatio': 'pytRatio', 'forwardPE': 'forwardPE', 'beta': 'beta', 'bidSize': 'bidSize', 'askSize': 'askSize', 'volume': 'volume', 'averageVolume': 'avgvolume', 'averageVolume10days': 'avgvlmn10', 'fiftyDayAverage': '50dayavg', 'twoHundredDayAverage': '200dayavg'}
+summary_measures = {'previousClose' : 'prvCls', 'open': 'open', 'dayLow': 'daylow', 'dayHigh': 'dayhigh', 'payoutRatio': 'pytRatio', 'forwardPE': 'forwardPE', 'beta': 'beta', 'bidSize': 'bidSize', 'askSize': 'askSize', 'volume': 'volume', 'averageVolume': '3mAvgVol', 'averageVolume10days': 'avgvlmn10', 'fiftyDayAverage': '50dayavg', 'twoHundredDayAverage': '200dayavg'}
 
 # dictionairy of ticker key stats summary
 key_stats_measures = {'floatShares': 'Float'}
-
 
 # note: the following scoring system is tuned to calculate a "popularity" score
 # feel free to make adjustments to suit your needs
@@ -270,7 +272,8 @@ def filter_tbl(tbl, min_val):
     BANNED_WORDS = [
         'THE', 'FUCK', 'ING', 'CEO', 'USD', 'WSB', 'FDA', 'NEWS', 'FOR', 'YOU', 'AMTES', 'WILL', 'CDT', 'SUPPO', 'MERGE',
         'BUY', 'HIGH', 'ADS', 'FOMO', 'THIS', 'OTC', 'ELI', 'IMO', 'TLDR', 'SHIT', 'ETF', 'BOOM', 'THANK', 'MAYBE', 'AKA',
-        'CBS', 'SEC', 'NOW', 'OVER', 'ROPE', 'MOON', 'SSR', 'HOLD', 'SELL', 'COVID', 'GROUP', 'MONDA', 'PPP', 'REIT', 'HOT', 'USA'
+        'CBS', 'SEC', 'NOW', 'OVER', 'ROPE', 'MOON', 'SSR', 'HOLD', 'SELL', 'COVID', 'GROUP', 'MONDA', 'PPP', 'REIT', 'HOT', 
+        'USA', 'YOLO', 'MUSK', 'AND'
     ]
 
     tbl = [row for row in tbl if row[1][0] >= min_val or row[1][1] >= min_val]
@@ -334,6 +337,7 @@ def get_list_val(lst, index):
 def print_tbl(tbl, filename, allsub, yahoo):
 
     header = ["Code", "Total", "Recent", "Prev", "Change", "Rockets"]
+    header = header + [x[1] for x in quick_stats]
 
     if allsub:
         header = header + list(subreddit_dict.values())
@@ -360,7 +364,7 @@ def print_tbl(tbl, filename, allsub, yahoo):
         myfile.write("date and time now = ")
         myfile.write(dt_string)
         myfile.write('\n')
-        myfile.write(tabulate(tbl, headers=header))
+        myfile.write(tabulate(tbl, headers=header, floatfmt=".3f"))
         myfile.write('\n\n')
 
     #logs to console
@@ -392,7 +396,7 @@ def getTickerInfo(results_tbl):
                     if result != 0:
                         valid = True
                 else:
-                    entry[1].append(0)
+                    entry[1].append('N/A')
 
 
             for measure in financial_measures.keys():
@@ -402,8 +406,9 @@ def getTickerInfo(results_tbl):
                     if result != 0:
                         valid = True
                 else:
-                    entry[1].append(0)
-##adding key stats module
+                    entry[1].append('N/A')
+
+            ## adding key stats module
             for measure in key_stats_measures.keys():
                 result = get_nested(ticker.key_stats, entry[0], measure)
                 if result is not None:
@@ -411,8 +416,97 @@ def getTickerInfo(results_tbl):
                     if result != 0:
                         valid = True
                 else:
-                    entry[1].append(0)
+                    entry[1].append('N/A')
 
+            # if the ticker has any valid column, it would be appended
+            if valid:
+                filtered_tbl.append(entry)
+
+    return filtered_tbl
+
+
+def getQuickStats(results_tbl):
+
+    filtered_tbl = []
+
+    for entry in results_tbl:
+        ticker = Ticker(entry[0])
+        if ticker is not None:
+            valid = False
+
+            price = get_nested(ticker.financial_data, entry[0], quick_stats[0][0])
+            if price is None or price == 0:
+                price = get_nested(ticker.price, entry[0], 'regularMarketPrice') 
+
+            if price is not None:
+                entry[1].append(price)
+                if price != 0:
+                    valid = True
+            else:
+                entry[1].append('N/A')
+
+            prev_close = get_nested(ticker.summary_detail, entry[0], quick_stats[1][0])
+            if prev_close is not None:
+                entry[1].append(prev_close)
+                if prev_close != 0:
+                    valid = True
+            else:
+                entry[1].append('N/A')
+
+            change = get_nested(ticker.price, entry[0], quick_stats[2][0])
+            if change is not None and change != 0 or (change == 0 and price == prev_close):
+                entry[1].append("{:.3f}".format(change*100))
+                if change != 0:
+                    valid = True
+
+            elif prev_close is not None and prev_close != 0 and price is not None:
+                change = ((float(price) - float(prev_close))/float(prev_close))*100
+                entry[1].append("{:.3f}".format(change))
+                if change != 0:
+                    valid = True
+            else:
+                entry[1].append('N/A')
+
+            volume = get_nested(ticker.summary_detail, entry[0], quick_stats[3][0])
+            if volume is not None:
+                entry[1].append(volume)
+                if volume != 0:
+                    valid = True
+            else:
+                entry[1].append('N/A')
+
+            change_vol = 0 
+            avg_vol = get_nested(ticker.summary_detail, entry[0], quick_stats[4][0])
+            if avg_vol is not None:
+                entry[1].append(avg_vol)
+                if avg_vol != 0:
+                    valid = True
+                    change_vol = ((float(volume) - float(avg_vol))/float(avg_vol))*100
+            else:
+                entry[1].append('N/A')
+
+            if change_vol != 0:
+                entry[1].append(change_vol)
+            else:
+                entry[1].append('N/A')
+
+            stock_float = get_nested(ticker.key_stats, entry[0], quick_stats[6][0])
+            if stock_float is not None:
+                entry[1].append(stock_float)
+                if stock_float != 0:
+                    valid = True
+            else:
+                entry[1].append('N/A')
+
+            industry = get_nested(ticker.summary_profile, entry[0], quick_stats[7][0])
+            if industry is not None:
+                entry[1].append(industry)
+                if industry != 0:
+                    valid = True
+            else:
+                entry[1].append('N/A')
+
+            # if the ticker has any valid column, it would be appended
             if valid:
                 filtered_tbl.append(entry)
 

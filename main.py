@@ -89,6 +89,9 @@ def main():
     elif args.sort == 5:
         results_tbl = sorted(results_tbl, key=lambda x: x[1][4], reverse=True)
 
+    print("Getting quick stats...")
+    results_tbl = getQuickStats(results_tbl)
+
     if args.yahoo:
         print("Getting yahoo finance information...")
         results_tbl = getTickerInfo(results_tbl)
