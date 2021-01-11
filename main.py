@@ -22,11 +22,7 @@
 __author__ = "Fufu Fang kaito1410 Napo2k"
 __copyright__ = "The GNU General Public License v3.0"
 
-import os
 import argparse
-import math
-import re
-import sys
 import logging
 from AutoDD import *
 
@@ -52,8 +48,11 @@ def main():
     parser.add_argument('--allsub', default=False, action='store_true',
                     help='Using this parameter searchs from one subreddit only, default subreddit is r/pennystocks.')
 
-    parser.add_argument('--filename', nargs='?', const='table_records.txt', type=str, default='table_records.txt',
-                    help='Change the file name from table_records.txt to whatever you wish')
+    parser.add_argument('--csv', default=False, action='store_true',
+                    help='Using this parameter produces a table_records.csv file, rather than a .txt file')
+
+    parser.add_argument('--filename', nargs='?', const='table_records', type=str, default='table_records',
+                    help='Change the file name from table_records to whatever you wish')
 
     args = parser.parse_args()
 
@@ -96,7 +95,7 @@ def main():
         print("Getting yahoo finance information...")
         results_tbl = getTickerInfo(results_tbl)
 
-    print_tbl(results_tbl, args.filename, args.allsub, args.yahoo)
+    print_tbl(results_tbl, args.filename, args.allsub, args.yahoo, args.csv)
 
 if __name__ == '__main__':
     main()

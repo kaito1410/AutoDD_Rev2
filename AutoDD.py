@@ -26,8 +26,8 @@ import os
 import math
 import sys
 import re
-import argparse
 import logging
+import csv 
 
 from collections import Counter
 from datetime import datetime, timedelta
@@ -273,7 +273,7 @@ def filter_tbl(tbl, min_val):
         'THE', 'FUCK', 'ING', 'CEO', 'USD', 'WSB', 'FDA', 'NEWS', 'FOR', 'YOU', 'AMTES', 'WILL', 'CDT', 'SUPPO', 'MERGE',
         'BUY', 'HIGH', 'ADS', 'FOMO', 'THIS', 'OTC', 'ELI', 'IMO', 'TLDR', 'SHIT', 'ETF', 'BOOM', 'THANK', 'MAYBE', 'AKA',
         'CBS', 'SEC', 'NOW', 'OVER', 'ROPE', 'MOON', 'SSR', 'HOLD', 'SELL', 'COVID', 'GROUP', 'MONDA', 'PPP', 'REIT', 'HOT', 
-        'USA', 'YOLO', 'MUSK', 'AND'
+        'USA', 'YOLO', 'MUSK', 'AND', 'STONK', 'ELON'
     ]
 
     tbl = [row for row in tbl if row[1][0] >= min_val or row[1][1] >= min_val]
@@ -334,7 +334,7 @@ def get_list_val(lst, index):
             return 0
 
 
-def print_tbl(tbl, filename, allsub, yahoo):
+def print_tbl(tbl, filename, allsub, yahoo, writecsv):
 
     header = ["Code", "Total", "Recent", "Prev", "Change", "Rockets"]
     header = header + [x[1] for x in quick_stats]
@@ -360,13 +360,32 @@ def print_tbl(tbl, filename, allsub, yahoo):
     completeName = os.path.join(sys.path[0], filename)
 
     # write to file
-    with open(completeName, "a") as myfile:
-        myfile.write("date and time now = ")
-        myfile.write(dt_string)
-        myfile.write('\n')
-        myfile.write(tabulate(tbl, headers=header, floatfmt=".3f"))
-        myfile.write('\n\n')
+    #with open(completeName, "a") as myfile:
+     #   myfile.write("date and time now = ")
+      #  myfile.write(dt_string)
+      #  myfile.write('\n')
+      #  myfile.write(tabulate(tbl, headers=header, floatfmt=".3f"))
+      #  myfile.write('\n\n')
 
+    print(completeName)
+    if writecsv:
+        # write to csv
+        completeName = completeName + '.csv'
+        with open(completeName, 'a') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(header)
+            for row in tbl:
+                writer.writerow(row)
+    else:
+        # write to file
+        completeName = completeName + '.txt'
+        with open(completeName, "a") as myfile:
+            myfile.write("date and time now = ")
+            myfile.write(dt_string)
+            myfile.write('\n')
+            myfile.write(tabulate(tbl, headers=header, floatfmt=".3f"))
+            myfile.write('\n\n')
+        
     #logs to console
     print("Wrote to file successfully: ")
     print(completeName)
@@ -486,7 +505,7 @@ def getQuickStats(results_tbl):
                 entry[1].append('N/A')
 
             if change_vol != 0:
-                entry[1].append(change_vol)
+                entry[1].append("{:.3f}".format(change_vol))
             else:
                 entry[1].append('N/A')
 
