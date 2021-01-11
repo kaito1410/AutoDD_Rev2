@@ -78,11 +78,27 @@ Change - (Recent score - Prev score) Shows increase or decrease in amount of cha
 
 Rockets - Number of Rocket Emojis
 
+Price - Current stock price
+
+PrvCls - Previous close price (yesterday)
+
+%Change - Percentage Change in price from yesterday
+
+Volume - Volume of trades for the ticker today
+
+3mAvgVol - 3 Month average volumn for the ticker
+
+%ChangeVol - Percentage Change in volumn from today to the 3 month average
+
+Float - Float shares, number of tradable shares of the ticker
+
+Industry - Industry of the company if available
+
 ## Example output
 
 Default Output:
 
-![Alt text](default_option.JPG?raw=true "Title")
+![Alt text](default_table.JPG?raw=true "Title")
 
 Allsub Option Output:
 
