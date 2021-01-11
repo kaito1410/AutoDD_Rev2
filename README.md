@@ -129,6 +129,7 @@ This will produce the following help text:
 	--sub [SUB]           Choose a different subreddit to search for tickers in, default is pennystocks
 	--sort [SORT]         Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis
 	--allsub              Using this parameter searchs from one subreddit only, default subreddit is r/pennystocks.
+	--csv                 Using this parameter produces a table_records.csv file, rather than a .txt file
 	--filename [FILENAME]
 							Change the file name from table_records.txt to whatever you wish
 			
@@ -180,6 +181,10 @@ Allsub (Subreddit toggle)
 
 	1. Using this parameter shows scores on the other subreddits such as RobinHoodPennyStocks, Stocks, WallStreetBets, etc
 	
+Csv 
+
+	1. Outputs table_records.csv file
+
 Filename
 
 	1. choose a different filename, this programs saves the table results to table_records.txt in the same folder as the AutoDD.py program
