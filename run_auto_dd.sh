@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -d .env ]; then
-    source ./env/bin/activate
+    source ./.env/bin/activate
 else
     echo "WARN: You do not have a virtual environment. Have you ran install_requirements.sh?"
     echo "Things might explode in a spectacular fashion"
