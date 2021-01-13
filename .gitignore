@@ -3,3 +3,6 @@ Pipfile
 Pipfile.lock
 table_records.txt
 table_records.csv
+generated_site
+**/__pycache__/
+*.pyc
