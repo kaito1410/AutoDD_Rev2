@@ -19,9 +19,14 @@ PROJECT_ROOT = os.path.join(parent_dir(APP_DIR), "generated_site")
 FREEZER_DESTINATION = PROJECT_ROOT
 # Since this is a repo page (not a Github user page),
 # we need to set the BASE_URL to the correct url as per GH Pages' standards
-FREEZER_BASE_URL = "http://localhost/{0}".format(REPO_NAME)
+# FREEZER_BASE_URL = "http://localhost/{0}".format(REPO_NAME)
+# For local testing, this will do
+FREEZER_BASE_URL = "http://localhost"
 FREEZER_REMOVE_EXTRA_FILES = False  # IMPORTANT: If this is True, all app files
                                     # will be deleted when you run the freezer
 FLATPAGES_MARKDOWN_EXTENSIONS = ['codehilite']
 FLATPAGES_ROOT = os.path.join(APP_DIR, 'pages')
 FLATPAGES_EXTENSION = '.md'
+
+# I had to add this - might need to be removed for gh-pages deployment
+FREEZER_RELATIVE_URLS = True
