@@ -1,6 +1,6 @@
 psaw==0.0.12
 yahooquery==2.2.12
 tabulate==0.8.7
-flask==1.1.2
+Flask==1.1.2
 Frozen-Flask==0.15
 Flask-FlatPages==0.7.2

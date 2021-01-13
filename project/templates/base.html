@@ -1,0 +1,27 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <title>{% block page_title %}Your Site{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block css %}{% endblock %}
+
+</head>
+<body class="box">
+
+<nav class="nav-menu">
+    <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="https://github.com/sloria/flask-ghpages-example">Source</a></li>
+    </ul>
+</nav>
+
+<div class="{% block content_class %}container{% endblock content_class %}">
+
+  <div class="content" role="main">
+    {% block content %}{% endblock %}
+  </div>
+
+</div><!-- end container -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
