@@ -4,3 +4,4 @@ Pipfile.lock
 table_records.txt
 table_records.csv
 __pycache__/
+*.pyc
