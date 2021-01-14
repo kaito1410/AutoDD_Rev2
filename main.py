@@ -72,11 +72,6 @@ def main():
     print("Counting rockets...")
     results_tbl = append_rocket_tbl(results_tbl, current_rockets, prev_rockets)
 
-    if args.allsub:
-        print("Searching other subreddits...")
-        for api_result in results_from_api[2:]:
-            results_tbl = additional_filter(results_tbl, api_result)
-
     if args.sort == 1:
         results_tbl = sorted(results_tbl, key=lambda x: x[1][0], reverse=True)
     elif args.sort == 2:
@@ -87,6 +82,11 @@ def main():
         results_tbl = sorted(results_tbl, key=lambda x: x[1][3], reverse=True)
     elif args.sort == 5:
         results_tbl = sorted(results_tbl, key=lambda x: x[1][4], reverse=True)
+
+    if args.allsub:
+        print("Searching other subreddits...")
+        for api_result in results_from_api[2:]:
+            results_tbl = additional_filter(results_tbl, api_result)
 
     print("Getting quick stats...")
     results_tbl = getQuickStats(results_tbl)

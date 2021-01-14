@@ -273,7 +273,7 @@ def filter_tbl(tbl, min_val):
         'THE', 'FUCK', 'ING', 'CEO', 'USD', 'WSB', 'FDA', 'NEWS', 'FOR', 'YOU', 'AMTES', 'WILL', 'CDT', 'SUPPO', 'MERGE',
         'BUY', 'HIGH', 'ADS', 'FOMO', 'THIS', 'OTC', 'ELI', 'IMO', 'TLDR', 'SHIT', 'ETF', 'BOOM', 'THANK', 'MAYBE', 'AKA',
         'CBS', 'SEC', 'NOW', 'OVER', 'ROPE', 'MOON', 'SSR', 'HOLD', 'SELL', 'COVID', 'GROUP', 'MONDA', 'PPP', 'REIT', 'HOT', 
-        'USA', 'YOLO', 'MUSK', 'AND', 'STONK', 'ELON'
+        'USA', 'YOLO', 'MUSK', 'AND', 'STONK', 'ELON', 'CAD'
     ]
 
     tbl = [row for row in tbl if row[1][0] >= min_val or row[1][1] >= min_val]
@@ -336,11 +336,12 @@ def get_list_val(lst, index):
 
 def print_tbl(tbl, filename, allsub, yahoo, writecsv):
 
-    header = ["Code", "Total", "Recent", "Prev", "Change", "Rockets"]
-    header = header + [x[1] for x in quick_stats]
+    header = ['Code', 'Total', 'Recent', 'Prev', 'Change', 'Rockets']
 
     if allsub:
         header = header + list(subreddit_dict.values())
+
+    header = header + [x[1] for x in quick_stats]
 
     if yahoo:
         header = header + list(summary_measures.values())
