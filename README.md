@@ -80,13 +80,9 @@ Rockets - Number of Rocket Emojis
 
 Price - Current stock price
 
-PrvCls - Previous close price (yesterday)
+%DayChange - Percentage change in todays price compared to yesterday
 
-%Change - Percentage Change in price from yesterday
-
-Volume - Volume of trades for the ticker today
-
-3mAvgVol - 3 Month average volumn for the ticker
+%50DayChange - Percentage change in todays price compared to the last 50 day average
 
 %ChangeVol - Percentage Change in volumn from today to the 3 month average
 
