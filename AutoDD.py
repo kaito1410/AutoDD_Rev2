@@ -46,8 +46,10 @@ subreddit_dict = {'pennystocks' : 'pnystks',
                   'investing' : 'invstng',
                   'wallstreetbets' : 'WSB'}
 
+quick_stats_hidden = [('previousClose', 'PrvCls'), ('fiftyDayAverage', 'fiftyDayAverage'), ('volume','Volume'), ('averageVolume', '3mAvgVol')]
+
 # quick stats that is important to most users (IMO)
-quick_stats = [('currentPrice','Price'), ('previousClose', 'PrvCls'), ('regularMarketChangePercent','%Change'), ('volume','Volume'), ('averageVolume', '3mAvgVol'), ('%ChangeVol', '%ChangeVol'), ('floatShares', 'Float'), ('industry', 'Industry')]
+quick_stats = [('currentPrice','Price'), ('regularMarketChangePercent','%DayChange'), ('50DayChange','%50DayChange'), ('%ChangeVol', '%ChangeVol'), ('floatShares', 'Float'), ('industry', 'Industry')]
 
 # dictionary of ticker financial information to get from yahoo
 financial_measures = {'currentPrice' : 'Price', 'quickRatio': 'QckRatio', 'currentRatio': 'CrntRatio', 'targetMeanPrice': 'Trgtmean', 'recommendationKey': 'Recommend'}
@@ -465,52 +467,46 @@ def getQuickStats(results_tbl):
             else:
                 entry[1].append('N/A')
 
-            prev_close = get_nested(ticker.summary_detail, entry[0], quick_stats[1][0])
-            if prev_close is not None:
-                entry[1].append(prev_close)
-                if prev_close != 0:
-                    valid = True
-            else:
-                entry[1].append('N/A')
+            prev_close = get_nested(ticker.summary_detail, entry[0], quick_stats_hidden[0][0])
 
-            change = get_nested(ticker.price, entry[0], quick_stats[2][0])
-            if change is not None and change != 0 or (change == 0 and price == prev_close):
-                entry[1].append("{:.3f}".format(change*100))
-                if change != 0:
+            daychange = get_nested(ticker.price, entry[0], quick_stats[1][0])
+            if daychange is not None and daychange != 0 or (daychange == 0 and price == prev_close):
+                entry[1].append("{:.3f}".format(daychange*100))
+                if daychange != 0:
                     valid = True
 
             elif prev_close is not None and prev_close != 0 and price is not None:
-                change = ((float(price) - float(prev_close))/float(prev_close))*100
-                entry[1].append("{:.3f}".format(change))
-                if change != 0:
+                daychange = ((float(price) - float(prev_close))/float(prev_close))*100
+                entry[1].append("{:.3f}".format(daychange))
+                if daychange != 0:
                     valid = True
             else:
                 entry[1].append('N/A')
 
-            volume = get_nested(ticker.summary_detail, entry[0], quick_stats[3][0])
-            if volume is not None:
-                entry[1].append(volume)
-                if volume != 0:
-                    valid = True
+            change_50day = 0 
+            avg50day = get_nested(ticker.summary_detail, entry[0], quick_stats_hidden[1][0])
+            if price is not None and price != 0:
+                change_50day = ((float(price) - float(avg50day))/float(avg50day))*100
+
+            if change_50day != 0:
+                entry[1].append("{:.3f}".format(change_50day))
             else:
                 entry[1].append('N/A')
 
             change_vol = 0 
-            avg_vol = get_nested(ticker.summary_detail, entry[0], quick_stats[4][0])
-            if avg_vol is not None:
-                entry[1].append(avg_vol)
-                if avg_vol != 0:
+            volume = get_nested(ticker.summary_detail, entry[0], quick_stats_hidden[2][0])
+            avg_vol = get_nested(ticker.summary_detail, entry[0], quick_stats_hidden[3][0])
+            if volume is not None and avg_vol is not None:
+                if avg_vol != 0 and volume != 0:
                     valid = True
                     change_vol = ((float(volume) - float(avg_vol))/float(avg_vol))*100
-            else:
-                entry[1].append('N/A')
 
             if change_vol != 0:
                 entry[1].append("{:.3f}".format(change_vol))
             else:
                 entry[1].append('N/A')
 
-            stock_float = get_nested(ticker.key_stats, entry[0], quick_stats[6][0])
+            stock_float = get_nested(ticker.key_stats, entry[0], quick_stats[4][0])
             if stock_float is not None:
                 entry[1].append(stock_float)
                 if stock_float != 0:
@@ -518,7 +514,7 @@ def getQuickStats(results_tbl):
             else:
                 entry[1].append('N/A')
 
-            industry = get_nested(ticker.summary_profile, entry[0], quick_stats[7][0])
+            industry = get_nested(ticker.summary_profile, entry[0], quick_stats[5][0])
             if industry is not None:
                 entry[1].append(industry)
                 if industry != 0:
