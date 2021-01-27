@@ -486,7 +486,10 @@ def getQuickStats(results_tbl):
             change_50day = 0 
             avg50day = get_nested(ticker.summary_detail, entry[0], quick_stats_hidden[1][0])
             if price is not None and price != 0:
-                change_50day = ((float(price) - float(avg50day))/float(avg50day))*100
+                if avg50day > 0:
+                    change_50day = ((float(price) - float(avg50day))/float(avg50day))*100
+                else:
+                    change_50day = 0
 
             if change_50day != 0:
                 entry[1].append("{:.3f}".format(change_50day))
