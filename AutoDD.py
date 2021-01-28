@@ -159,11 +159,13 @@ def get_freq_list(gen):
             increment += math.ceil(i.score/upvote_factor)
 
         # search the title for the ticker/tickers
+        title_extracted = set()
         if hasattr(i, 'title'):
             title = ' ' + i.title + ' '
             title_extracted = set(re.findall(pattern, title))
 
         # search the text body for the ticker/tickers
+        selftext_extracted = set()
         if hasattr(i, 'selftext'):
             selftext = ' ' + i.selftext + ' '
             selftext_extracted = set(re.findall(pattern, selftext))
