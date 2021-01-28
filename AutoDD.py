@@ -170,9 +170,8 @@ def get_freq_list(gen):
 
         rocket_tickers = selftext_extracted.union(title_extracted)
 
+        count_rocket = title.count(rocket) + selftext.count(rocket)
         for j in rocket_tickers:
-
-            count_rocket = title.count(rocket) + selftext.count(rocket)
             if j in rocket_dict:
                 rocket_dict[j] += count_rocket
             else:
@@ -486,7 +485,7 @@ def getQuickStats(results_tbl):
             change_50day = 0 
             avg50day = get_nested(ticker.summary_detail, entry[0], quick_stats_hidden[1][0])
             if price is not None and price != 0:
-                if avg50day > 0:
+                if avg50day is not None and avg50day > 0:
                     change_50day = ((float(price) - float(avg50day))/float(avg50day))*100
                 else:
                     change_50day = 0
