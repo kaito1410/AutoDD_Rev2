@@ -34,8 +34,10 @@ from datetime import datetime, timedelta
 
 # Pip modules imports
 from psaw import PushshiftAPI
+import praw
 from yahooquery import Ticker
 from tabulate import tabulate
+import pandas as pd
 
 # dictionary of possible subreddits to search in with their respective column name
 subreddit_dict = {'pennystocks' : 'pnystks',
@@ -75,19 +77,41 @@ upvote_factor = 2
 # rocket emoji
 rocket = '🚀'
 
-def get_submission(n, sub):
+def get_submission_praw(n, sub):
 
     """
     Returns a list of results for submission in past:
     1st list: current result from n hours ago until now
     2nd list: prev result from 2n hours ago until n hours ago
-    m. for each subreddit in subreddit_dict, create a new results list from 2n hours ago until now
      """
 
-    val = subreddit_dict.pop(sub, None)
-    if val is None:
-        print('invalid subreddit: ' + sub)
-        quit()
+    mid_interval = datetime.utcnow() - timedelta(hours=n)
+    timestamp_mid = mid_interval.timestamp()
+    timestamp_start = (mid_interval - timedelta(hours=n)).timestamp()
+    timestamp_end = datetime.utcnow().timestamp()
+
+    all_results = []
+    results = []
+    reddit = praw.Reddit(client_id='HuPz8KOVm6FlUg', client_secret='fkUmaxqzInDO7wTJsboC0r7cxYA-xA', user_agent='PennyStock Scraper')
+    subreddit = reddit.subreddit(sub)
+
+    for post in subreddit.new():
+        all_results.append([post.title, post.link_flair_text, post.selftext, post.score, post.created])
+
+    # now we need to find the posts from time mid to end, start to mid
+    results.append([posts for posts in all_results if posts[4] >= timestamp_mid and posts[4] <= timestamp_end])
+
+    results.append([posts for posts in all_results if posts[4] >= timestamp_start and posts[4] < timestamp_mid])
+
+    return results
+
+def get_submission_psaw(n, sub):
+
+    """
+    Returns a list of results for submission in past:
+    1st list: current result from n hours ago until now
+    2nd list: prev result from 2n hours ago until n hours ago
+     """
 
     api = PushshiftAPI()
 
@@ -109,7 +133,51 @@ def get_submission(n, sub):
                                  subreddit=sub,
                                  filter=['title', 'link_flair_text', 'selftext', 'score']))
 
-    # results for the other subreddits
+    return results
+
+def get_submission(n, sub):
+
+    """
+    Handles getting submissions from reddit
+    Chooses between using psaw and praw, for redundency
+     """
+
+    use_praw = True
+    results = get_submission_praw(n, sub)
+
+    if results is None:
+        print("praw did not fetch any results for the sub: ")
+        print(sub)
+        print(" switching to psaw")
+        praw = False
+        results = get_submission_psaw(n, sub)
+    
+    print("Searching for tickers...")
+    if use_praw:
+        current_tbl, current_rockets = get_freq_list_praw(results[0])
+        prev_tbl, prev_rockets = get_freq_list_praw(results[1])  
+    else:
+        current_tbl, current_rockets = get_freq_list(results[0])
+        prev_tbl, prev_rockets = get_freq_list(results[1])
+
+    return current_tbl, current_rockets, prev_tbl, prev_rockets
+
+def get_submission_psaw_allsubs(n):
+
+    """
+    Returns a list of results for submission in past:
+    for each subreddit in subreddit_dict, create a new results list from 2n hours ago until now
+     """
+
+    api = PushshiftAPI()
+    results = []
+
+    mid_interval = datetime.today() - timedelta(hours=n)
+    timestamp_mid = int(mid_interval.timestamp())
+    timestamp_start = int((mid_interval - timedelta(hours=n)).timestamp())
+    timestamp_end = int(datetime.today().timestamp())
+
+    # results for the other subreddits 
     for key in subreddit_dict:
         results.append(api.search_submissions(after=timestamp_start,
                                     before=timestamp_end,
@@ -118,6 +186,83 @@ def get_submission(n, sub):
 
     return results
 
+def get_freq_list_praw(lst):
+    """
+    Return the frequency list for the past n days
+
+    :param int gen: The generator for subreddit submission
+    :returns:
+        - all_tbl - frequency table for all stock mentions
+        - title_tbl - frequency table for stock mentions in titles
+        - selftext_tbl - frequency table for all stock metninos in selftext
+    """
+
+    # Python regex pattern for stocks codes
+    pattern = "[A-Z]{3,5}"
+
+    # Dictionary containing the summaries
+    all_dict = {}
+
+    # Dictionary containing the rocket count
+    rocket_dict = {}
+
+    # looping over each post
+    for post in lst:
+        # every ticker in the title will earn this base points
+        increment = base_points
+
+        # flair is worth bonus points
+        if 'DD' in post[1]:
+            increment += bonus_points
+        elif 'Catalyst' in post[1]:
+            increment += bonus_points
+        elif 'technical analysis' in post[1]:
+            increment += bonus_points
+
+        # every 2 upvotes are worth 1 extra point
+        if upvote_factor > 0:
+            increment += math.ceil(post[3]/upvote_factor)
+
+        # search the title for the ticker/tickers
+        title_extracted = set()
+        title = ' ' + post[0] + ' '
+        title_extracted = set(re.findall(pattern, title))
+
+        # search the text body for the ticker/tickers
+        selftext_extracted = set()
+        selftext = ' ' + post[2] + ' '
+        selftext_extracted = set(re.findall(pattern, selftext))
+
+        rocket_tickers = selftext_extracted.union(title_extracted)
+
+        count_rocket = title.count(rocket) + selftext.count(rocket)
+        for j in rocket_tickers:
+            if j in rocket_dict:
+                rocket_dict[j] += count_rocket
+            else:
+                rocket_dict[j] = count_rocket
+
+        # title_extracted is a set, duplicate tickers from the same title counted once only
+        for k in title_extracted:
+
+            if k in all_dict:
+                all_dict[k] += increment
+            else:
+                all_dict[k] = increment
+
+        # avoid counting additional point for the tickers found in the text body
+        # only search the text body if ticker was not found in the title
+        if len(title_extracted) > 0:
+                continue
+
+        for m in selftext_extracted:
+
+            if m in all_dict:
+                all_dict[m] += increment
+            else:
+                all_dict[m] = increment
+
+    return all_dict.items(), rocket_dict
 
 def get_freq_list(gen):
     """
@@ -141,7 +286,6 @@ def get_freq_list(gen):
 
     # looping over each thread
     for i in gen:
-
         # every ticker in the title will earn this base points
         increment = base_points
 
@@ -279,7 +423,7 @@ def filter_tbl(tbl, min_val):
         'USA', 'YOLO', 'MUSK', 'AND', 'STONK', 'ELON', 'CAD'
     ]
 
-    tbl = [row for row in tbl if row[1][0] >= min_val or row[1][1] >= min_val]
+    tbl = [row for row in tbl if row[1][0] >= min_val]
     tbl = [row for row in tbl if row[0] not in BANNED_WORDS]
     return tbl
 
@@ -363,14 +507,6 @@ def print_tbl(tbl, filename, allsub, yahoo, writecsv):
     # save the file to the same dir as the AutoDD.py script
     completeName = os.path.join(sys.path[0], filename)
 
-    # write to file
-    #with open(completeName, "a") as myfile:
-     #   myfile.write("date and time now = ")
-      #  myfile.write(dt_string)
-      #  myfile.write('\n')
-      #  myfile.write(tabulate(tbl, headers=header, floatfmt=".3f"))
-      #  myfile.write('\n\n')
-
     print(completeName)
     if writecsv:
         # write to csv
@@ -448,7 +584,7 @@ def getTickerInfo(results_tbl):
     return filtered_tbl
 
 
-def getQuickStats(results_tbl):
+def getQuickStats(results_tbl, minprice, maxprice):
 
     filtered_tbl = []
 
@@ -528,6 +664,7 @@ def getQuickStats(results_tbl):
 
             # if the ticker has any valid column, it would be appended
             if valid:
-                filtered_tbl.append(entry)
+                if (price >= minprice) and (price <= maxprice):
+                    filtered_tbl.append(entry)
 
     return filtered_tbl

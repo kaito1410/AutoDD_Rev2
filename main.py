@@ -33,17 +33,23 @@ def main():
     parser.add_argument('--interval', nargs='?', const=24, type=int, default=24,
                     help='Choose a time interval in hours to filter the results, default is 24 hours')
 
+    parser.add_argument('--sub', nargs='?', const='pennystocks', type=str, default='pennystocks',
+                    help='Choose a different subreddit to search for tickers in, default is pennystocks')
+
+    parser.add_argument('--maxprice', nargs='?', const=9999999, type=int, default=9999999,
+                    help='Max price of the the ticker results, default is 9999999')
+
+    parser.add_argument('--minprice', nargs='?', const=0, type=int, default=0,
+                    help='Min price of the the ticker results, default is 0')
+
+    parser.add_argument('--sort', nargs='?', const=1, type=int, default=1,
+                    help='Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis')
+
     parser.add_argument('--min', nargs='?', const=10, type=int, default=10,
                     help='Filter out results that have less than the min score, default is 10')
 
     parser.add_argument('--yahoo', default=False, action='store_true',
-                    help='Using this parameter shows yahoo finance information on the ticker, makes the script run slower!')
-
-    parser.add_argument('--sub', nargs='?', const='pennystocks', type=str, default='pennystocks',
-                    help='Choose a different subreddit to search for tickers in, default is pennystocks')
-
-    parser.add_argument('--sort', nargs='?', const=1, type=int, default=1,
-                    help='Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis')
+                    help='Using this parameter shows yahoo finance information on the ticker')
 
     parser.add_argument('--allsub', default=False, action='store_true',
                     help='Using this parameter searchs from one subreddit only, default subreddit is r/pennystocks.')
@@ -58,11 +64,7 @@ def main():
 
     print("Getting submissions...")
     # call reddit api to get results
-    results_from_api = get_submission(args.interval/2, args.sub)  
-
-    print("Searching for tickers...")
-    current_tbl, current_rockets = get_freq_list(results_from_api[0])
-    prev_tbl, prev_rockets = get_freq_list(results_from_api[1])
+    current_tbl, current_rockets, prev_tbl, prev_rockets  = get_submission(args.interval/2, args.sub)  
 
     print("Populating results...")
     results_tbl = combine_tbl(current_tbl, prev_tbl)
@@ -85,11 +87,12 @@ def main():
 
     if args.allsub:
         print("Searching other subreddits...")
-        for api_result in results_from_api[2:]:
+        results_from_psaw = get_submission_psaw_allsubs(args.interval/2)  
+        for api_result in results_from_psaw:
             results_tbl = additional_filter(results_tbl, api_result)
 
     print("Getting quick stats...")
-    results_tbl = getQuickStats(results_tbl)
+    results_tbl = getQuickStats(results_tbl, args.minprice, args.maxprice)
 
     if args.yahoo:
         print("Getting yahoo finance information...")
