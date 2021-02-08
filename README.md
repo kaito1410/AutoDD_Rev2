@@ -120,14 +120,18 @@ This will produce the following help text:
 	-h, --help            show this help message and exit
 	--interval [INTERVAL]
 							Choose a time interval in hours to filter the results, default is 24 hours
-	--min [MIN]           Filter out results that have less than the min score, default is 10
-	--yahoo               Using this parameter shows yahoo finance information on the ticker, makes the script run slower!
 	--sub [SUB]           Choose a different subreddit to search for tickers in, default is pennystocks
+	--maxprice [MAXPRICE]
+							Max price of the the ticker results, default is 9999999
+	--minprice [MINPRICE]
+							Min price of the the ticker results, default is 0
 	--sort [SORT]         Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis
+	--min [MIN]           Filter out results that have less than the min score, default is 10
+	--yahoo               Using this parameter shows yahoo finance information on the ticker
 	--allsub              Using this parameter searchs from one subreddit only, default subreddit is r/pennystocks.
 	--csv                 Using this parameter produces a table_records.csv file, rather than a .txt file
 	--filename [FILENAME]
-							Change the file name from table_records.txt to whatever you wish
+							Change the file name from table_records to whatever you wish
 			
 			
 			
@@ -142,7 +146,15 @@ Interval (Time interval)
 	4. The score in the Prev column shows the score for each ticker in the last N/2 - N hours, default is 12h - 24h
 	
 	5. The score in the other subreddit columns shows the score for each ticker in the last 24 hours
+
+Sub (Subreddit Selection)
+
+	1. Choose a different subreddit to search for tickers in, default is pennystocks
 	
+	2. When a different subreddit is choosen, the total, recent, prev columns contain the score for the choosen subreddit
+	
+	3. You can choose to run this on any subreddit you want, there are no limits. For example --sub=WallS
+
 	
 Min (Minimum score)
 
@@ -154,15 +166,6 @@ Yahoo (Yahoo Finance toggle)
 	1. Using this parameter shows yahoo finance information, running yahoo mode is slower
 	
 	2. This options shows additional yahoo information on the ticker, such as open price, day low, day high, forward PE, beta, volume, etc.
-	
-	
-Sub (Subreddit Selection)
-
-	1. Choose a different subreddit to search for tickers in, default is pennystocks
-	
-	2. When a different subreddit is choosen, the total, recent, prev columns contain the score for the choosen subreddit
-	
-	3. Possible choices: pennystocks, RobinHoodPennyStocks, Daytrading, StockMarket, stocks
 
 
 Sort
@@ -173,13 +176,16 @@ Sort
 	
 	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by change in # of rocket emojis
 	
+
 Allsub (Subreddit toggle)
 
 	1. Using this parameter shows scores on the other subreddits such as RobinHoodPennyStocks, Stocks, WallStreetBets, etc
 	
+
 Csv 
 
 	1. Outputs table_records.csv file
+
 
 Filename
 
