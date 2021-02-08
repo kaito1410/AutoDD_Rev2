@@ -30,8 +30,8 @@ def main():
     # Instantiate the parser
     parser = argparse.ArgumentParser(description='AutoDD Optional Parameters')
 
-    parser.add_argument('--interval', nargs='?', const=12, type=int, default=12,
-                    help='Choose a time interval in hours to filter the results, default is 12 hours')
+    parser.add_argument('--interval', nargs='?', const=24, type=int, default=24,
+                    help='Choose a time interval in hours to filter the results, default is 24 hours')
 
     parser.add_argument('--sub', nargs='?', const='default', type=str, default='default',
                     help='Choose a different subreddit to search for tickers in, by default this script searchs pennystocks and robinhoodpennystocks')
@@ -64,7 +64,7 @@ def main():
 
     print("Getting submissions...")
     # call reddit api to get results
-    current_tbl, current_rockets, prev_tbl, prev_rockets  = get_submission(24, args.sub)  
+    current_tbl, current_rockets, prev_tbl, prev_rockets  = get_submission(args.interval, args.sub)  
 
     print("Populating results...")
     results_tbl = combine_tbl(current_tbl, prev_tbl)
