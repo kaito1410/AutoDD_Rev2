@@ -151,11 +151,9 @@ Interval (Time interval)
 
 Sub (Subreddit Selection)
 
-	1. Choose a different subreddit to search for tickers in, default is pennystocks
+	1. Choose a different subreddit to search for tickers in, by default, it searches both pennystocks and robinhoodpennystocks
 	
-	2. When a different subreddit is choosen, the total, recent, prev columns contain the score for the choosen subreddit
-	
-	3. You can choose to run this on any subreddit you want, there are no limits. For example --sub=WallS
+	3. You can choose to run this on any subreddit you want, there are no limits. For example --sub=WallStreetBets
 
 MaxPrice (Maximum Price Limit)
 
