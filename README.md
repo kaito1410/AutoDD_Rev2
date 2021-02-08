@@ -94,7 +94,7 @@ Industry - Industry of the company if available
 
 Default Output:
 
-![Alt text](default_table.JPG?raw=true "Title")
+![Alt text](default_table.PNG?raw=true "Title")
 
 Allsub Option Output:
 
