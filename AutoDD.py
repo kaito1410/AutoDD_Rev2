@@ -35,7 +35,6 @@ from datetime import datetime, timedelta
 # Pip modules imports
 from psaw import PushshiftAPI
 import praw
-import pandas
 from yahooquery import Ticker
 from tabulate import tabulate
 
@@ -131,7 +130,7 @@ def get_submission_praw(n, sub):
     results.append([posts for posts in all_results if posts[4] >= timestamp_start and posts[4] < timestamp_mid])
 
     if results[0] and not results[1]:
-        print('submission results were not found for the previous time period, try reducing the interval')
+        print('submission results were not found for the previous time period. This may be a popular subreddit with lots of submissions. Try reducing the time interval with the --interval parameter')
 
     return results
 
