@@ -1,3 +1,4 @@
+praw==7.0
 psaw==0.0.12
 yahooquery==2.2.12
 tabulate==0.8.7

@@ -35,9 +35,12 @@ from datetime import datetime, timedelta
 # Pip modules imports
 from psaw import PushshiftAPI
 import praw
+import pandas
 from yahooquery import Ticker
 from tabulate import tabulate
-import pandas as pd
+
+# =================================================================================================
+# Global Consts:
 
 # dictionary of possible subreddits to search in with their respective column name
 subreddit_dict = {'pennystocks' : 'pnystks',
@@ -48,19 +51,16 @@ subreddit_dict = {'pennystocks' : 'pnystks',
                   'investing' : 'invstng',
                   'wallstreetbets' : 'WSB'}
 
-quick_stats_hidden = [('previousClose', 'PrvCls'), ('fiftyDayAverage', 'fiftyDayAverage'), ('volume','Volume'), ('averageVolume', '3mAvgVol')]
+quick_stats_hidden = [('previousClose', 'PrvCls'), ('fiftyDayAverage', 'fiftyDayAverage'), ('volume','Volume'), ('averageVolume', '3mAvgVol'), ('sharesShort', 'sharesShort')]
 
 # quick stats that is important to most users (IMO)
-quick_stats = [('currentPrice','Price'), ('regularMarketChangePercent','%DayChange'), ('50DayChange','%50DayChange'), ('%ChangeVol', '%ChangeVol'), ('floatShares', 'Float'), ('industry', 'Industry')]
+quick_stats = [('currentPrice','Price'), ('regularMarketChangePercent','1DayChange%'), ('50DayChange','50DayChange%'), ('%ChangeVol', 'Vol/3MonthAvg'), ('floatShares', 'Float'), ('shortPercentOfFloat', 'Short/Float%'), ('industry', 'Industry')]
 
 # dictionary of ticker financial information to get from yahoo
-financial_measures = {'currentPrice' : 'Price', 'quickRatio': 'QckRatio', 'currentRatio': 'CrntRatio', 'targetMeanPrice': 'Trgtmean', 'recommendationKey': 'Recommend'}
+financial_measures = {'currentPrice' : 'Price $USD', 'quickRatio': 'QckRatio', 'currentRatio': 'CrntRatio', 'targetMeanPrice': 'Trgtmean', 'recommendationKey': 'Recommend'}
 
 # dictionary of ticker summary information to get from yahoo
 summary_measures = {'previousClose' : 'prvCls', 'open': 'open', 'dayLow': 'daylow', 'dayHigh': 'dayhigh', 'payoutRatio': 'pytRatio', 'forwardPE': 'forwardPE', 'beta': 'beta', 'bidSize': 'bidSize', 'askSize': 'askSize', 'volume': 'volume', 'averageVolume': '3mAvgVol', 'averageVolume10days': 'avgvlmn10', 'fiftyDayAverage': '50dayavg', 'twoHundredDayAverage': '200dayavg'}
-
-# dictionairy of ticker key stats summary
-key_stats_measures = {'floatShares': 'Float'}
 
 # note: the following scoring system is tuned to calculate a "popularity" score
 # feel free to make adjustments to suit your needs
@@ -77,6 +77,12 @@ upvote_factor = 2
 # rocket emoji
 rocket = '🚀'
 
+# =================================================================================================
+# praw credentials
+CLIENT_ID = "3RbFQX8O9UqDCA"
+CLIENT_SECRET = "NalOX_ZQqGWP4eYKZv6bPlAb2aWOcA"
+USER_AGENT = "subreddit_scraper"
+
 def get_submission_praw(n, sub):
 
     """
@@ -84,24 +90,48 @@ def get_submission_praw(n, sub):
     1st list: current result from n hours ago until now
     2nd list: prev result from 2n hours ago until n hours ago
      """
-
     mid_interval = datetime.utcnow() - timedelta(hours=n)
     timestamp_mid = mid_interval.timestamp()
     timestamp_start = (mid_interval - timedelta(hours=n)).timestamp()
     timestamp_end = datetime.utcnow().timestamp()
 
+    reddit = praw.Reddit(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, user_agent=USER_AGENT)
+
+    # todo fix interval results numbers
     all_results = []
+    if sub == "default":
+        pennystocks = reddit.subreddit("pennystocks")
+        # praw limitation gets only 1000 posts
+        for post in pennystocks.new(limit=1000):
+            all_results.append([post.title, post.link_flair_text, post.selftext, post.score, post.created])
+
+        rhpennystocks = reddit.subreddit("RobinHoodPennyStocks")
+        # praw limitation gets only 1000 posts
+        for post in rhpennystocks.new(limit=1000):
+            all_results.append([post.title, post.link_flair_text, post.selftext, post.score, post.created])
+    else:
+        subreddit = reddit.subreddit(sub)
+        # praw limitation gets only 1000 posts
+        for post in subreddit.new(limit=1000):
+            all_results.append([post.title, post.link_flair_text, post.selftext, post.score, post.created])
+
+    # for debugging/checking results from praw
+    #pandas.set_option('display.max_rows', None)
+    #print_result = pandas.DataFrame(all_results,columns=['title', 'flair', 'body', 'score', 'created'])
+    #print(print_result)
+
+    #print(datetime.fromtimestamp(timestamp_start))
+    #print(datetime.fromtimestamp(timestamp_mid))
+    #print(datetime.fromtimestamp(timestamp_end))
+
     results = []
-    reddit = praw.Reddit(client_id='HuPz8KOVm6FlUg', client_secret='fkUmaxqzInDO7wTJsboC0r7cxYA-xA', user_agent='PennyStock Scraper')
-    subreddit = reddit.subreddit(sub)
-
-    for post in subreddit.new():
-        all_results.append([post.title, post.link_flair_text, post.selftext, post.score, post.created])
-
     # now we need to find the posts from time mid to end, start to mid
     results.append([posts for posts in all_results if posts[4] >= timestamp_mid and posts[4] <= timestamp_end])
 
     results.append([posts for posts in all_results if posts[4] >= timestamp_start and posts[4] < timestamp_mid])
+
+    if results[0] and not results[1]:
+        print('submission results were not found for the previous time period, try reducing the interval')
 
     return results
 
@@ -112,7 +142,6 @@ def get_submission_psaw(n, sub):
     1st list: current result from n hours ago until now
     2nd list: prev result from 2n hours ago until n hours ago
      """
-
     api = PushshiftAPI()
 
     mid_interval = datetime.today() - timedelta(hours=n)
@@ -142,21 +171,23 @@ def get_submission(n, sub):
     Chooses between using psaw and praw, for redundency
      """
 
-    use_praw = True
-    results = get_submission_praw(n, sub)
+    subreddit_dict.pop(sub, None)
 
-    if results is None:
-        print("praw did not fetch any results for the sub: ")
-        print(sub)
-        print(" switching to psaw")
-        praw = False
-        results = get_submission_psaw(n, sub)
-    
-    print("Searching for tickers...")
+    use_praw = True
+
     if use_praw:
-        current_tbl, current_rockets = get_freq_list_praw(results[0])
-        prev_tbl, prev_rockets = get_freq_list_praw(results[1])  
+        results = get_submission_praw(n, sub)
+        if not results:
+            print("praw did not fetch any results for the sub: ")
+            print(sub)
+            print("try switching to psaw")
+        else: 
+            print("Searching for tickers...")
+            current_tbl, current_rockets = get_freq_list_praw(results[0])
+            prev_tbl, prev_rockets = get_freq_list_praw(results[1])  
     else:
+        results = get_submission_psaw(n, sub)
+        print("Searching for tickers...")
         current_tbl, current_rockets = get_freq_list(results[0])
         prev_tbl, prev_rockets = get_freq_list(results[1])
 
@@ -212,15 +243,16 @@ def get_freq_list_praw(lst):
         increment = base_points
 
         # flair is worth bonus points
-        if 'DD' in post[1]:
-            increment += bonus_points
-        elif 'Catalyst' in post[1]:
-            increment += bonus_points
-        elif 'technical analysis' in post[1]:
-            increment += bonus_points
+        if post[1] is not None:
+            if 'DD' in post[1]:
+                increment += bonus_points
+            elif 'Catalyst' in post[1]:
+                increment += bonus_points
+            elif 'technical analysis' in post[1]:
+                increment += bonus_points
 
         # every 2 upvotes are worth 1 extra point
-        if upvote_factor > 0:
+        if upvote_factor > 0 and post[3] is not None:
             increment += math.ceil(post[3]/upvote_factor)
 
         # search the title for the ticker/tickers
@@ -436,15 +468,14 @@ def combine_tbl(tbl_current, tbl_prev):
     dict_result = {}
 
     for key, value in tbl_current:
-        dict_result[key] = [value, value, 0, value]
+        dict_result[key] = [value, 0, "N/A"]
 
     for key, value in tbl_prev:
         if key in dict_result.keys():
-            dict_result[key][0] = dict_result[key][0] + value
-            dict_result[key][2] = value
-            dict_result[key][3] = dict_result[key][3] - value
+            dict_result[key][1] = value
+            dict_result[key][2] = "{:.2f}".format(float(float(dict_result[key][0] - value)/value)*100)
         else:
-            dict_result[key] = [value, 0, value, -value]
+            dict_result[key] = [0, value, "N/A"]
 
     return dict_result.items()
 
@@ -483,7 +514,7 @@ def get_list_val(lst, index):
 
 def print_tbl(tbl, filename, allsub, yahoo, writecsv):
 
-    header = ['Code', 'Total', 'Recent', 'Prev', 'Change', 'Rockets']
+    header = ['Ticker', 'Score', 'Previous', 'ScoreChange%', 'Rockets']
 
     if allsub:
         header = header + list(subreddit_dict.values())
@@ -523,7 +554,7 @@ def print_tbl(tbl, filename, allsub, yahoo, writecsv):
             myfile.write("date and time now = ")
             myfile.write(dt_string)
             myfile.write('\n')
-            myfile.write(tabulate(tbl, headers=header, floatfmt=".3f"))
+            myfile.write(tabulate(tbl, headers=header, floatfmt=".2f", stralign="left", numalign="left"))
             myfile.write('\n\n')
         
     #logs to console
@@ -556,7 +587,6 @@ def getTickerInfo(results_tbl):
                         valid = True
                 else:
                     entry[1].append('N/A')
-
 
             for measure in financial_measures.keys():
                 result = get_nested(ticker.financial_data, entry[0], measure)
@@ -591,7 +621,7 @@ def getQuickStats(results_tbl, minprice, maxprice):
     for entry in results_tbl:
         ticker = Ticker(entry[0])
         if ticker is not None:
-            valid = False
+            valid_cols = 0
 
             price = get_nested(ticker.financial_data, entry[0], quick_stats[0][0])
             if price is None or price == 0:
@@ -600,7 +630,7 @@ def getQuickStats(results_tbl, minprice, maxprice):
             if price is not None:
                 entry[1].append(price)
                 if price != 0:
-                    valid = True
+                    valid_cols += 1
             else:
                 entry[1].append('N/A')
 
@@ -608,15 +638,15 @@ def getQuickStats(results_tbl, minprice, maxprice):
 
             daychange = get_nested(ticker.price, entry[0], quick_stats[1][0])
             if daychange is not None and daychange != 0 or (daychange == 0 and price == prev_close):
-                entry[1].append("{:.3f}".format(daychange*100))
+                entry[1].append("{:.2f}".format(daychange*100))
                 if daychange != 0:
-                    valid = True
+                    valid_cols += 1
 
             elif prev_close is not None and prev_close != 0 and price is not None:
                 daychange = ((float(price) - float(prev_close))/float(prev_close))*100
-                entry[1].append("{:.3f}".format(daychange))
+                entry[1].append("{:.2f}".format(daychange))
                 if daychange != 0:
-                    valid = True
+                    valid_cols += 1
             else:
                 entry[1].append('N/A')
 
@@ -629,7 +659,7 @@ def getQuickStats(results_tbl, minprice, maxprice):
                     change_50day = 0
 
             if change_50day != 0:
-                entry[1].append("{:.3f}".format(change_50day))
+                entry[1].append("{:.2f}".format(change_50day))
             else:
                 entry[1].append('N/A')
 
@@ -638,11 +668,11 @@ def getQuickStats(results_tbl, minprice, maxprice):
             avg_vol = get_nested(ticker.summary_detail, entry[0], quick_stats_hidden[3][0])
             if volume is not None and avg_vol is not None:
                 if avg_vol != 0 and volume != 0:
-                    valid = True
-                    change_vol = ((float(volume) - float(avg_vol))/float(avg_vol))*100
+                    valid_cols += 1
+                    change_vol = abs((float(volume) - float(avg_vol))/float(avg_vol))
 
             if change_vol != 0:
-                entry[1].append("{:.3f}".format(change_vol))
+                entry[1].append("{:.2f}".format(change_vol))
             else:
                 entry[1].append('N/A')
 
@@ -650,20 +680,30 @@ def getQuickStats(results_tbl, minprice, maxprice):
             if stock_float is not None:
                 entry[1].append(stock_float)
                 if stock_float != 0:
-                    valid = True
+                    valid_cols += 1
             else:
                 entry[1].append('N/A')
 
-            industry = get_nested(ticker.summary_profile, entry[0], quick_stats[5][0])
+
+            stock_short_percent = get_nested(ticker.key_stats, entry[0], quick_stats[5][0])
+            if stock_short_percent is not None:
+                entry[1].append(stock_short_percent)
+                valid_cols += 1
+            else:
+                entry[1].append('N/A')
+
+
+            industry = get_nested(ticker.summary_profile, entry[0], quick_stats[6][0])
             if industry is not None:
                 entry[1].append(industry)
                 if industry != 0:
-                    valid = True
+                    valid_cols += 1
             else:
                 entry[1].append('N/A')
 
-            # if the ticker has any valid column, it would be appended
-            if valid:
+            # if the ticker has 5 or more valid columns, we append it to the table
+            if valid_cols > 4:
+                # if ticker current price is in our search range, append it to the table
                 if (price >= minprice) and (price <= maxprice):
                     filtered_tbl.append(entry)
 

@@ -30,11 +30,11 @@ def main():
     # Instantiate the parser
     parser = argparse.ArgumentParser(description='AutoDD Optional Parameters')
 
-    parser.add_argument('--interval', nargs='?', const=24, type=int, default=24,
-                    help='Choose a time interval in hours to filter the results, default is 24 hours')
+    parser.add_argument('--interval', nargs='?', const=12, type=int, default=12,
+                    help='Choose a time interval in hours to filter the results, default is 12 hours')
 
-    parser.add_argument('--sub', nargs='?', const='pennystocks', type=str, default='pennystocks',
-                    help='Choose a different subreddit to search for tickers in, default is pennystocks')
+    parser.add_argument('--sub', nargs='?', const='default', type=str, default='default',
+                    help='Choose a different subreddit to search for tickers in, by default this script searchs pennystocks and robinhoodpennystocks')
 
     parser.add_argument('--maxprice', nargs='?', const=9999999, type=int, default=9999999,
                     help='Max price of the the ticker results, default is 9999999')
@@ -64,7 +64,7 @@ def main():
 
     print("Getting submissions...")
     # call reddit api to get results
-    current_tbl, current_rockets, prev_tbl, prev_rockets  = get_submission(args.interval/2, args.sub)  
+    current_tbl, current_rockets, prev_tbl, prev_rockets  = get_submission(24, args.sub)  
 
     print("Populating results...")
     results_tbl = combine_tbl(current_tbl, prev_tbl)
@@ -87,7 +87,7 @@ def main():
 
     if args.allsub:
         print("Searching other subreddits...")
-        results_from_psaw = get_submission_psaw_allsubs(args.interval/2)  
+        results_from_psaw = get_submission_psaw_allsubs(args.interval)  
         for api_result in results_from_psaw:
             results_tbl = additional_filter(results_tbl, api_result)
 
