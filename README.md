@@ -29,6 +29,8 @@ Pip - python get-pip.py https://phoenixnap.com/kb/install-pip-windows#:~:text=PI
 
 psaw - pip install psaw https://pypi.org/project/psaw/
 
+praw - pip install praw https://pypi.org/project/praw/
+
 yahooquery - pip install yahooquery https://pypi.org/project/yahooquery/
 
 tabulate - pip install tabulate https://pypi.org/project/tabulate/
@@ -68,25 +70,25 @@ For Advanced Users:
 
 Code - Ticker Name
 
-Total - Total score on the ticker for r/pennystock subreddit. Higher means more discussions/chatter about this ticker
+Score - Score of the ticker from the last X hours. By default, Recent shows the score from the last 24 hours. If you change the interval for example --interval 48, then recent show data from 48 hours ago
 
-Recent - Score of the ticker from the last X hours. By default, Recent shows the score from the last 12 hours. If you change the interval for example --interval 48, then recent show data from 24 hours ago (48 divide by 2)
+Previous - Score of the ticker from the last X - 2X hour period. By default, Prev shows the score from the last 24-48 hour period. If you change the interval for example --interval 48, then recent show data from the 48-96 hour period
 
-Prev - Score of the ticker from the last X to 2X hour period. By default, Prev shows the score from the last 12-24 hour period. If you change the interval for example --interval 48, then recent show data from the 24-48 hour period
-
-Change - (Recent score - Prev score) Shows increase or decrease in amount of chatter/discussions about this ticker. Positive numbers = increase in discussions, higher numbers means more discussions/chatter about this ticker
+ScoreChange% - Shows increase or decrease in percentage in amount of chatter/discussions about this ticker. N/A means that there was no discussion in the previous interval period. 
 
 Rockets - Number of Rocket Emojis
 
 Price - Current stock price
 
-%DayChange - Percentage change in todays price compared to yesterday
+1DayChange% - Percentage change in todays price compared to yesterday
 
-%50DayChange - Percentage change in todays price compared to the last 50 day average
+50DayChange% - Percentage change in todays price compared to the last 50 day average
 
-%ChangeVol - Percentage Change in volumn from today to the 3 month average
+Vol/3MonthAvg - Ratio of the most recent trading days' volumn to the average in the last 3 month
 
 Float - Float shares, number of tradable shares of the ticker
+
+Short/Float% - Amount of short shares / avaliable float for the ticker in percentage
 
 Industry - Industry of the company if available
 
@@ -155,7 +157,14 @@ Sub (Subreddit Selection)
 	
 	3. You can choose to run this on any subreddit you want, there are no limits. For example --sub=WallS
 
-	
+MaxPrice (Maximum Price Limit)
+
+	1. Filter out tickers that have a current price of greater than the set limit, default is 9999999 (does not filter out anything)
+
+MinPrice (Minimum score)
+
+	1. Filter out tickers that have a current price of less than the set limit, default is 0 (does not filter out anything)
+
 Min (Minimum score)
 
 	1. Filter out results that have less than the min score in the Title column, default is 10
