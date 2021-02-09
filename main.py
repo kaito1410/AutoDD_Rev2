@@ -39,6 +39,9 @@ def main():
     parser.add_argument('--min', nargs='?', const=10, type=int, default=10,
                     help='Filter out results that have less than the min score, default is 10')
 
+    parser.add_argument('--minprice', nargs='?', const=0, type=int, default=0,
+                    help='Filter out results less than the min price set, default is 0')
+
     parser.add_argument('--maxprice', nargs='?', const=9999999, type=int, default=9999999,
                     help='Filter out results more than the max price set, default is 9999999')
 
@@ -79,7 +82,7 @@ def main():
     results_df = results_df.fillna(value=0).astype({'Rockets': 'int32'})
 
     print("Getting financial stats...")
-    results_df = get_financial_stats(results_df, args.threads, args.advanced)
+    results_df = get_financial_stats(results_df, args.threads, args.advanced, args.minprice, args.maxprice)
 
     # Sort by Total (sort = 1), Recent (sort = 2), Prev (sort = 3), Change (sort = 4), Rockets (sort = 5)
     results_df.sort_values(by=results_df.columns[args.sort - 1], inplace=True, ascending=False)

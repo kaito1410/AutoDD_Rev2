@@ -362,7 +362,7 @@ def filter_df(df, min_val):
     df = df.drop(index=drop_index)
     return df
 
-def get_financial_stats(results_df, threads=True, advanced=False):
+def get_financial_stats(results_df, threads=True, advanced=False, minprice=0, maxprice=99999999):
 
     # TODO: should be able to build the smarts so that a single dictionary necessary, and download_advanced_stats
     # function should be able to figure out which yahoo module the stat belongs to
@@ -392,7 +392,7 @@ def get_financial_stats(results_df, threads=True, advanced=False):
 
     # check for valid symbols and get quick stats
     ticker_list = list(results_df.index.values)
-    quick_stats_df = get_quick_stats(ticker_list, threads)
+    quick_stats_df = get_quick_stats(ticker_list, threads, minprice, maxprice)
     valid_ticker_list = list(quick_stats_df.index.values)
 
     summary_stats_df = download_advanced_stats(valid_ticker_list, module_name_map, threads)
@@ -402,7 +402,7 @@ def get_financial_stats(results_df, threads=True, advanced=False):
 
     return results_df
 
-def get_quick_stats(ticker_list, threads=True):
+def get_quick_stats(ticker_list, threads=True, minprice=0, maxprice=99999999):
 
     quick_stats = {'regularMarketPreviousClose': 'prvCls', 'fiftyDayAverage': '50DayAvg',
                    'regularMarketVolume': 'Volume', 'averageDailyVolume3Month': '3MonthVolAvg',
@@ -461,8 +461,8 @@ def get_quick_stats(ticker_list, threads=True):
                 stock_float = stock_float
                 valid = True
 
-        # if the ticker has any valid column, append
-        if valid:
+        # if the ticker has any valid column, and price is in the range, append
+        if valid and price >= minprice and price <= maxprice:
             stat_list = [symbol, price, day_change, change_50day, change_vol, stock_float]
             processed_stats_table.append(stat_list)
 
