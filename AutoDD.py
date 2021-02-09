@@ -385,7 +385,7 @@ def get_financial_stats(results_df, threads=True, advanced=False):
     key_stats_measures = {'shortPercentOfFloat': 'Short/Float%'}
 
     # mapping of yahoo module names to dictionaries containing data we want to retrieve
-    module_name_map = {'summaryProfile': summary_profile_measures, 'defaultKeyStatistics': key_stats_measures}
+    module_name_map = {'defaultKeyStatistics': key_stats_measures, 'summaryProfile': summary_profile_measures}
 
     if advanced:
         module_name_map.update({'summaryDetail': summary_measures, 'financialData': financial_measures})
