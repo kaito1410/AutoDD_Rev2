@@ -5,7 +5,7 @@ If you want to know what stocks people are talking about on reddit, this little 
 
 Original author - Fufu Fang https://github.com/fangfufu
 
-Rev 2 Author - Steven Zhu https://github.com/kaito1410 Napo2k https://github.com/Napo2k
+Rev 2 Author - Steven Zhu https://github.com/kaito1410 gobbedy https://github.com/gobbedy Napo2k https://github.com/Napo2k 
 
 The original AutoDD produced a simple table of the stock ticker and the number of threads talking about the ticker.
 
@@ -31,9 +31,9 @@ psaw - pip install psaw https://pypi.org/project/psaw/
 
 praw - pip install praw https://pypi.org/project/praw/
 
-yahooquery - pip install yahooquery https://pypi.org/project/yahooquery/
-
 tabulate - pip install tabulate https://pypi.org/project/tabulate/
+
+pandas - pip install pandas https://pypi.org/project/pandas/
 
 The requirements can be installed by running install_requirements.bat / install_requirements.sh
 
