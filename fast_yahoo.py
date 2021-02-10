@@ -44,7 +44,10 @@ def download_advanced_stats(symbol_list, module_name_map, threads=True):
                         stat = retrieved_module_dict[stat_name]
                         if isinstance(stat, dict):
                             if stat:  # only if non-empty otherwise N/A
-                                stat_val = stat['raw']
+                                if stat_name == "shortPercentOfFloat":
+                                    stat_val = stat['fmt']
+                                else:
+                                    stat_val = stat['raw']
                         elif isinstance(stat, str) or isinstance(stat, numbers.Number):
                             stat_val = stat
                         else:
@@ -119,7 +122,10 @@ def download_quick_stats(symbol_list, quick_stats_dict, threads=True):
                         stat = retrieved_stats_dict[quick_stat_name]
                         if isinstance(stat, dict):
                             if stat:  # only if non-empty otherwise N/A
-                                stat_val = stat['raw']
+                                if quick_stat_name == "floatShares":
+                                    stat_val = stat['fmt']
+                                else:
+                                    stat_val = stat['raw']
                         elif isinstance(stat, str) or isinstance(stat, numbers.Number):
                             stat_val = stat
                         else:

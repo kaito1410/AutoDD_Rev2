@@ -70,13 +70,15 @@ For Advanced Users:
 
 Code - Ticker Name
 
-Score - Score of the ticker from the last X hours. By default, Recent shows the score from the last 24 hours. If you change the interval for example --interval 48, then recent show data from 48 hours ago
+24H Total - Score of the ticker from the last XX hours. By default, this column shows the score from the last 24 hours. If you change the interval for example --interval 48, then this show score of the tickers for the last 48 hours
 
-Previous - Score of the ticker from the last X - 2X hour period. By default, Prev shows the score from the last 24-48 hour period. If you change the interval for example --interval 48, then recent show data from the 48-96 hour period
+Recent - Score of the ticker from the recent half of the interval. By default, Recent shows the score from the last 12 hours. If you change the interval for example --interval 48, then recent show data from the last 24 hours
 
-ScoreChange% - Shows increase or decrease in percentage in amount of chatter/discussions about this ticker. N/A means that there was no discussion in the previous interval period. 
+Prev - Score of the ticker from the last X - 2X hour period. By default, Prev shows the score from the last 24-48 hour period. If you change the interval for example --interval 48, then recent show data from the 48-96 hour period
 
-Rockets - Number of Rocket Emojis
+Change - Shows increase or decrease in the score of the ticker. A positive number means that there was more discussion recently than the previous interval period. 
+
+Rockets - Number of Rocket Emojis on the submission
 
 Price - Current stock price
 
@@ -86,7 +88,7 @@ Price - Current stock price
 
 Vol/3MonthAvg - Ratio of the most recent trading days' volumn to the average in the last 3 month
 
-Float - Float shares, number of tradable shares of the ticker
+Float Shares - Number of tradable shares of the ticker
 
 Short/Float% - Amount of short shares / avaliable float for the ticker in percentage
 
@@ -96,7 +98,7 @@ Industry - Industry of the company if available
 
 Default Output:
 
-![Alt text](default_table.PNG?raw=true "Title")
+![Alt text](default_table.JPG?raw=true "Title")
 
 Allsub Option Output:
 
@@ -123,14 +125,16 @@ This will produce the following help text:
 	--interval [INTERVAL]
 							Choose a time interval in hours to filter the results, default is 24 hours
 	--sub [SUB]           Choose a different subreddit to search for tickers in, default is pennystocks
-	--maxprice [MAXPRICE]
-							Max price of the the ticker results, default is 9999999
-	--minprice [MINPRICE]
-							Min price of the the ticker results, default is 0
-	--sort [SORT]         Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis
 	--min [MIN]           Filter out results that have less than the min score, default is 10
-	--yahoo               Using this parameter shows yahoo finance information on the ticker
+	--minprice [MINPRICE]
+							Filter out results less than the min price set, default is 0
+	--maxprice [MAXPRICE]
+							Filter out results more than the max price set, default is 9999999
+	--advanced            Using this parameter shows advanced yahoo finance information on the ticker
+	--sort [SORT]         Sort the results table by descending order of score, 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by # of rocket emojis
 	--allsub              Using this parameter searchs from one subreddit only, default subreddit is r/pennystocks.
+	--psaw                Using this parameter selects psaw (push-shift) as the reddit scraper over praw (reddit-api)
+	--no-threads          Disable multi-tasking (enabled by default). Multi-tasking speeds up downloading of data.
 	--csv                 Using this parameter produces a table_records.csv file, rather than a .txt file
 	--filename [FILENAME]
 							Change the file name from table_records to whatever you wish
@@ -149,11 +153,17 @@ Interval (Time interval)
 	
 	5. The score in the other subreddit columns shows the score for each ticker in the last 24 hours
 
+Min (Minimum score)
+
+	1. Filter out results that have less than the min score in the Title column, default is 10
+
+
 Sub (Subreddit Selection)
 
 	1. Choose a different subreddit to search for tickers in, by default, it searches both pennystocks and robinhoodpennystocks
 	
 	3. You can choose to run this on any subreddit you want, there are no limits. For example --sub=WallStreetBets
+
 
 MaxPrice (Maximum Price Limit)
 
@@ -162,13 +172,9 @@ MaxPrice (Maximum Price Limit)
 MinPrice (Minimum score)
 
 	1. Filter out tickers that have a current price of less than the set limit, default is 0 (does not filter out anything)
-
-Min (Minimum score)
-
-	1. Filter out results that have less than the min score in the Title column, default is 10
 	
 	
-Yahoo (Yahoo Finance toggle)
+Advanced (Yahoo Finance Key Metrics)
 
 	1. Using this parameter shows yahoo finance information, running yahoo mode is slower
 	
@@ -184,10 +190,19 @@ Sort
 	3. 1 = sort by total score, 2 = sort by recent score, 3 = sort by previous score, 4 = sort by change in score, 5 = sort by change in # of rocket emojis
 	
 
-Allsub (Subreddit toggle)
+Allsub (All Subreddit toggle)
 
 	1. Using this parameter shows scores on the other subreddits such as RobinHoodPennyStocks, Stocks, WallStreetBets, etc
+
 	
+Psaw (Push-Shift toggle)
+
+	1. Using this parameter chooses push-shift to retieve subreddit data
+
+
+No-threads (Multi-threading Off toggle)
+
+	1. Disable multi-tasking (enabled by default). Multi-tasking speeds up downloading of data.
 
 Csv 
 
