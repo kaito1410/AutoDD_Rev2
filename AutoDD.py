@@ -69,13 +69,14 @@ def get_submission_praw(n, sub_dict):
     1st list: current result from n hours ago until now
     2nd list: prev result from 2n hours ago until n hours ago
      """
-    mid_interval = datetime.utcnow() - timedelta(hours=n)
-    timestamp_mid = mid_interval.timestamp()
-    timestamp_start = (mid_interval - timedelta(hours=n)).timestamp()
-    timestamp_end = datetime.utcnow().timestamp()
+
+    # datetime.today() produces UTC time now :)
+    mid_interval = datetime.today() - timedelta(hours=n)
+    timestamp_mid = int(mid_interval.timestamp())
+    timestamp_start = int((mid_interval - timedelta(hours=n)).timestamp())
+    timestamp_end = int(datetime.today().timestamp())
 
     reddit = praw.Reddit(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, user_agent=USER_AGENT)
-
 
     recent = {}
     prev = {}
@@ -84,7 +85,7 @@ def get_submission_praw(n, sub_dict):
         all_results = []
         # praw limitation gets only 1000 posts
         for post in subreddit.new(limit=1000):
-            all_results.append([post.title, post.link_flair_text, post.selftext, post.score, post.created])
+            all_results.append([post.title, post.link_flair_text, post.selftext, post.score, post.created_utc])
 
         recent[key] = [posts for posts in all_results if posts[4] >= timestamp_mid and posts[4] <= timestamp_end]
         prev[key] = [posts for posts in all_results if posts[4] >= timestamp_start and posts[4] < timestamp_mid]
