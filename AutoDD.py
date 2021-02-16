@@ -86,7 +86,6 @@ def get_submission_praw(n, sub_dict):
         # praw limitation gets only 1000 posts
         for post in subreddit.new(limit=1000):
             all_results.append([post.title, post.link_flair_text, post.selftext, post.score, post.created_utc])
-            print(post.created_utc)
 
         recent[key] = [posts for posts in all_results if posts[4] >= timestamp_mid and posts[4] <= timestamp_end]
         prev[key] = [posts for posts in all_results if posts[4] >= timestamp_start and posts[4] < timestamp_mid]
